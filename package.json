@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joeldc94/test-nodejs.git"
+    "url": ""
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/joeldc94/test-nodejs/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/joeldc94/test-nodejs#readme",
+  "homepage": "",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
