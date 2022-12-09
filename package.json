@@ -1,0 +1,34 @@
+{
+  "name": "ferramentas-previsio-backend",
+  "version": "1.0.0",
+  "description": "Server para ferramentas de consulta que rodam no site da Previsio Engenharia",
+  "main": "index.js",
+  "engines": {
+    "node": "16.x"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joeldc94/test-nodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joeldc94/test-nodejs/issues"
+  },
+  "homepage": "https://github.com/joeldc94/test-nodejs#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "got": "^9.6.0",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.25.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "keywords": []
+}
