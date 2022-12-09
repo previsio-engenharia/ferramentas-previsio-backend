@@ -11,13 +11,10 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/previsio-engenharia/ferramentas-previsio-backend"
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": ""
-  },
   "homepage": "",
   "dependencies": {
     "cors": "^2.8.5",
