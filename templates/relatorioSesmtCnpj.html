@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Relatório SESMT</title>
+        <style>
+            body{ 
+                min-width: 19cm;
+                min-height: 27cm;
+                height: 100%;
+                margin: 1cm;
+                font-family: 'Times New Roman', Times, serif;
+                color: #333;
+                border: 1px solid black;
+            }
+            .page{
+                display: table;
+                width: 100%;
+                height: 100%;
+                margin: 0px;
+                padding: 0px;
+                /*border: 1px solid black;*/
+            }
+            .page table{
+                /*border: 1px solid black;*/
+                padding: 10px;
+            }         
+            .header{
+                color:#333;
+                width: 100%;
+                margin: 5px;
+                vertical-align: middle;
+                border: 1px solid black;
+            }
+            .header .logoPrevisio, .tableHeader{
+                width: 30%;
+                text-align: left;                
+            }
+            .header .infoPrevisio, .tableInfo{
+                width: 70%;
+                text-align: right;                
+            }
+            .header .infoPrevisio p{
+                padding: 0px;
+                margin: 0px;
+            }
+            /**/
+            .page table .title td{                
+                text-align: center;
+                vertical-align: middle;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #ccc;
+            }
+            .page table .title td h2{
+                margin: 0px;
+                padding: 20px 10px 20px 10px;
+                font-size: 18px;
+            }
+            .page table .title td p{
+                padding: 5px 10px;
+                margin: 0px;
+                text-align: justify;
+                font-size: 14px;
+            }
+            /**/
+            .page table .title2 td h3{
+                margin: 0px;
+                padding: 20px 10px 10px 10px;
+                font-size: 18px;
+            }
+
+            .tableHeader, .tableInfo{
+                padding: 5px 20px;
+                font-size: 12px;
+                border-bottom: 1px solid #ccc;
+            }
+            .obs{
+                font-size: 12px;
+                text-align: justify;
+                margin: 0px;
+                margin-top: 10px;
+                padding: 0 10px;
+            }
+            footer{
+                padding-top: 50px;
+                height: 100;
+                width: 100%;
+               
+            }
+            footer p{
+                text-align: end;
+                font-size: 14px;
+                vertical-align: bottom;
+                color: #333;
+                padding: 0 30px;
+                margin: 0;
+            }
+            footer a{
+                text-decoration: none;
+                color: #333;
+                padding-left: 5px;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <section class="page">
+            <table>
+                <tbody>
+                    <tr class="header">
+                        <td class="logoPrevisio">
+                            <img src="https://raw.githubusercontent.com/joeldc94/test-nextjs/master/public/logo_previsio_azul.png" style="width:100%; max-width:180px;">
+                        </td>
+                        <td class="infoPrevisio">
+                            <p><b>Previsio Engenharia</b></p>
+                            <p>Rua Julio de Castilhos, 45, bairro Niterói</p>
+                            <p>Canoas - RS</p>
+                        </td>
+                    </tr>
+                    <tr class="title">
+                        <td colspan="2">
+                            <h2>CONSULTA NR04: EQUIPE SESMT</h2>
+                            <p>Esta Norma estabelece os parâmetros e os requisitos para constituição e manutenção dos Serviços Especializados em Segurança e Medicina do Trabalho - SESMT, com a finalidade de promover a saúde e proteger a integridade do trabalhador.</p>
+                            <p>Os dados deste documento foram consultados a partir do CNAE informado e da quantidade de trabalhadores na empresa, fornecidos pelo usuário requisitante. Os dados relativos ao CNPJ informado são públicos, disponibilizados pela Receita Federal, e podem estar desatualizados.</p>
+                        </td>                    
+                    </tr>
+                    <tr class="title2">
+                        <td colspan="2">
+                            <h3>CARACTERÍSTICAS DA EMPRESA</h3>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th class="tableHeader">
+                            CNPJ
+                        </th>
+                        <td class="tableInfo">
+                            {{cnpj}}                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Razão Social
+                        </th>
+                        <td class="tableInfo">
+                            {{razaoSocial}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Nome Fantasia
+                        </th>
+                        <td class="tableInfo">
+                            {{nomeFantasia}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            CNAE Principal
+                        </th>
+                        <td class="tableInfo">
+                            {{codigoCnaeFiscal}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Denominação
+                        </th>
+                        <td class="tableInfo">
+                            {{descricaoCnaeFiscal}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Grau de Risco da Empresa
+                        </th>
+                        <td class="tableInfo">
+                            {{maiorGrauRisco}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Quantidade de Trabalhadores
+                        </th>
+                        <td class="tableInfo">
+                            {{nroTrabalhadores}}
+                        </td>
+                    </tr>                
+                    <tr class="title2">
+                        <td colspan="2">
+                            <h3>EQUIPE SESMT NECESSÁRIA</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Técnicos de Segurança
+                        </th>
+                        <td class="tableInfo">
+                            {{tecnicoSeg}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Engenheiros de Segurança
+                        </th>
+                        <td class="tableInfo">
+                            {{engenheiroSeg}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Auxiliares/Técnicos de Enfermagem
+                        </th>
+                        <td class="tableInfo">
+                            {{auxTecEnfermagem}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Enfermeiros
+                        </th>
+                        <td class="tableInfo">
+                            {{enfermeiro}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Médicos
+                        </th>
+                        <td class="tableInfo">
+                            {{medico}}
+                        </td>
+                    </tr>
+                </tbody>
+
+                <tfooter class="tableFoot">
+                    {{#if obsSesmt1}}
+                        <tr>
+                            <td colspan="2">
+                                <p class="obs">(*) Tempo parcial (mínimo de três horas)</p>
+                            </td>
+                        </tr>
+                    {{/if}}
+                    {{#if obsSesmt3}}
+                        <tr>
+                            <td colspan="2">
+                                <p class="obs">(***) O empregador pode optar pela contratação de um enfermeiro do trabalho em tempo parcial, em substituição ao auxiliar ou técnico de enfermagem do trabalho</p>
+                            </td>
+                        </tr>
+                    {{/if}}
+                </tfooter>
+                              
+            </table>
+
+        </section>
+        <footer>
+            <p>Gerado em xx/xx/xxxx</p>
+            <p>em <a href="https://ferramentas.previsio.com.br/consulta_nr04" target="_blank">ferramentas.previsio.com.br/consulta_nr04</a></p>
+        </footer>
+    </body>
+</html>

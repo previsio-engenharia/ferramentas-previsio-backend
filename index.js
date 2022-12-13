@@ -13,13 +13,17 @@ const { Sequelize, Op, DataTypes } = require('sequelize');
 const sequelize = require('./models/db');
 
 
+const pdf = require('./generatePdf');
+
+
+
 app.use(express.json());
 
 //app.options('*', cors());
 
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://ferramentas.previsio.com.br");
-    //res.header("Access-Control-Allow-Origin", "*");
+    //res.header("Access-Control-Allow-Origin", "https://ferramentas.previsio.com.br");
+    res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST");
     res.header("Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type, Authorization");
     app.use(cors());
@@ -403,10 +407,6 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 respostaConsultaTabelas.mensagem = 'Erro: Nenhum valor encontrado da base de dados da equipe CIPA.'       
             })
 
-
-
-
-
         }
         else{
             //consulta tabela CIPA
@@ -439,6 +439,97 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             })
         }
     }
+
+
+    /*
+    ***
+    */
+
+/*
+    const puppeteer = require('puppeteer');
+    const hb = require('handlebars');
+    const fs = require('fs');
+    const path = require('path');
+    const utils = require('util');
+
+    const readFile = utils.promisify(fs.readFile);
+
+    const templatePath = "./templates/relatorio.html";
+
+    async function getTemplateHtml(tPath) {
+        console.log("Loading template file in memory")
+        try {
+            const invoicePath = path.resolve(tPath);
+            return await readFile(invoicePath, 'utf8');
+        } catch (err) {
+            return Promise.reject("Could not load html template");
+        }
+    }
+
+    async function generatePdf(data, tPath) {
+        getTemplateHtml(tPath).then(async (res) => {
+            // Now we have the html code of our template in res object
+            // you can check by logging it on console
+            // console.log(res)
+            console.log("Compiling the template with handlebars")
+            const template = hb.compile(res, { strict: true });
+            // we have compile our code with handlebars
+            const result = template(data);
+            // We can use this to add dyamic data to our handlebas template at run time from database or API as per need. you can read the official doc to learn more https://handlebarsjs.com/
+            const html = result;
+            // we are using headless mode
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage()
+            // We set the page content as the generated html by handlebars
+            await page.setContent(html)
+            // We use pdf function to generate the pdf in the same folder as this file.
+            await page.pdf({ path: 'invoice.pdf', format: 'A4' })
+            await browser.close();
+            console.log("PDF Generated")
+        }).catch(err => {
+            console.error(err)
+        });
+    }
+    */
+    const templatePath = "./templates/relatorioSesmtCnae.html";
+    const reportPath = './reports/report.pdf'
+    pdf.generatePdf(respostaConsultaTabelas, templatePath, reportPath);
+
+/*
+
+//const ejs = require('ejs');
+    try{
+
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        await page.setContent('<h1>hello</h1>');
+        //await page.emulateMedia('screen');
+        await page.pdf({
+            path: './reports/resposta.pdf',
+            format: 'A4',
+            printBackground: true
+        });
+
+        console.log('done');
+        await browser.close();
+        process.exit;
+        console.log('PDF OK!!');
+    }
+    catch(e){
+        console.log('Erro: ' + e);
+    }
+*/
+
+
+    /*
+    ***
+    */
+    
+
+
+
+
 
     //retorno para front
     return res.status(respostaConsultaTabelas.status).json({respostaConsultaTabelas});
