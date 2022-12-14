@@ -2,7 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const https = require('https');
+
 const got = require('got');
+
+const date = require('date-and-time')
 
 //const Home = require('./models/Home');
 //const MsgContact = require('./models/MsgContact');
@@ -429,7 +432,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 respostaConsultaTabelas.cipaSuplentes = cipa_table[0].integrantes_suplentes;
 
                 //Última consulta, escreve mensagem de aprovação
-                respostaConsultaTabelas.mensagem = 'Todos dados consultados com sucesso' 
+                respostaConsultaTabelas.mensagem = 'Todos dados consultados com sucesso'
             })
             .catch(()=>{
                 //se ocorreu algum erro, preenche informações para retornar ao front
@@ -440,156 +443,22 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         }
     }
 
+    if(!respostaConsultaTabelas.erro){
+        const now  =  new Date();
+        const dateTimeReport = date.format(now,'DD/MM/YY [às] HH:mm');
+        console.log(dateTimeReport);
+        respostaConsultaTabelas.dateTimeReport = dateTimeReport;
 
-    /*
-    ***
-    */
+        //chama função para gerar PDF
+        const templatePath = "./templates/relatorioSesmtCnae.html";
+        const reportPath = './reports/report.pdf'
+        pdf.generatePdf(respostaConsultaTabelas, templatePath, reportPath);
 
-/*
-    const puppeteer = require('puppeteer');
-    const hb = require('handlebars');
-    const fs = require('fs');
-    const path = require('path');
-    const utils = require('util');
-
-    const readFile = utils.promisify(fs.readFile);
-
-    const templatePath = "./templates/relatorio.html";
-
-    async function getTemplateHtml(tPath) {
-        console.log("Loading template file in memory")
-        try {
-            const invoicePath = path.resolve(tPath);
-            return await readFile(invoicePath, 'utf8');
-        } catch (err) {
-            return Promise.reject("Could not load html template");
-        }
     }
-
-    async function generatePdf(data, tPath) {
-        getTemplateHtml(tPath).then(async (res) => {
-            // Now we have the html code of our template in res object
-            // you can check by logging it on console
-            // console.log(res)
-            console.log("Compiling the template with handlebars")
-            const template = hb.compile(res, { strict: true });
-            // we have compile our code with handlebars
-            const result = template(data);
-            // We can use this to add dyamic data to our handlebas template at run time from database or API as per need. you can read the official doc to learn more https://handlebarsjs.com/
-            const html = result;
-            // we are using headless mode
-            const browser = await puppeteer.launch();
-            const page = await browser.newPage()
-            // We set the page content as the generated html by handlebars
-            await page.setContent(html)
-            // We use pdf function to generate the pdf in the same folder as this file.
-            await page.pdf({ path: 'invoice.pdf', format: 'A4' })
-            await browser.close();
-            console.log("PDF Generated")
-        }).catch(err => {
-            console.error(err)
-        });
-    }
-    */
-    const templatePath = "./templates/relatorioSesmtCnae.html";
-    const reportPath = './reports/report.pdf'
-    pdf.generatePdf(respostaConsultaTabelas, templatePath, reportPath);
-
-/*
-
-//const ejs = require('ejs');
-    try{
-
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-
-        await page.setContent('<h1>hello</h1>');
-        //await page.emulateMedia('screen');
-        await page.pdf({
-            path: './reports/resposta.pdf',
-            format: 'A4',
-            printBackground: true
-        });
-
-        console.log('done');
-        await browser.close();
-        process.exit;
-        console.log('PDF OK!!');
-    }
-    catch(e){
-        console.log('Erro: ' + e);
-    }
-*/
-
-
-    /*
-    ***
-    */
-    
-
-
-
-
 
     //retorno para front
     return res.status(respostaConsultaTabelas.status).json({respostaConsultaTabelas});
 })
-
-/*
-//modificar textos home page
-app.post('/add-home',async (req, res) =>{
-    
-    //verifica se já há um registro no banco
-    const dataHome = await Home.findOne();
-
-    //se houver registro, não permite o cadastro de novos
-    if(dataHome){
-        return res.status(400).json({
-            erro: true,
-            mensagem: "Erro: Dados para página home não cadastrados. A página já possui um registro!"
-        });
-
-    }
-    //cadastrando dados no db
-    await Home.create(req.body)
-    .then(()=>{
-        return res.json({
-            erro: false,
-            mensagem: "Dados para página home cadastrados com sucesso!"
-        });
-
-    }).catch(()=>{
-        return res.status(400).json({
-            erro: true,
-            mensagem: "Erro: Dados para página home não cadastrados!"
-        });
-    })
-})
-*/
-
-/*
-//tela de contato, adiciona mensagem
-app.post('/add-msg-contact', async (req, res) => {
-    console.log(req.body)
-
-    //salvar no db
-    await MsgContact.create(req.body)
-    .then((msgContact) =>{
-        return res.json({
-            erro: false,
-            id: msgContact.id,
-            mensagem: "Mensagem de contato enviada com sucesso!"
-        })
-
-    }).catch(()=>{
-        return res.status(400).json({
-            erro: true,
-            mensagem: "Erro: não foi possivel salvar sua mensagem"
-        });
-    })
-});
-*/
-
 
 
 const port = process.env.PORT || 8080;

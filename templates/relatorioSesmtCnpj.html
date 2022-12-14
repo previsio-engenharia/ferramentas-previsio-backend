@@ -33,16 +33,21 @@
                 border: 1px solid black;
             }
             .header .logoPrevisio, .tableHeader{
-                width: 30%;
+                width: 35%;
                 text-align: left;                
             }
             .header .infoPrevisio, .tableInfo{
-                width: 70%;
+                width: 65%;
                 text-align: right;                
             }
             .header .infoPrevisio p{
                 padding: 0px;
                 margin: 0px;
+            }
+            .header .infoPrevisio a{
+                font-weight: 600;
+                text-decoration: none;
+                color: #333;
             }
             /**/
             .page table .title td{                
@@ -113,7 +118,7 @@
                             <img src="https://raw.githubusercontent.com/joeldc94/test-nextjs/master/public/logo_previsio_azul.png" style="width:100%; max-width:180px;">
                         </td>
                         <td class="infoPrevisio">
-                            <p><b>Previsio Engenharia</b></p>
+                            <p><a target="_blank" href="https://previsio.com.br">Previsio Engenharia</a></p>
                             <p>Rua Julio de Castilhos, 45, bairro Niterói</p>
                             <p>Canoas - RS</p>
                         </td>
@@ -255,8 +260,8 @@
 
         </section>
         <footer>
-            <p>Gerado em xx/xx/xxxx</p>
-            <p>em <a href="https://ferramentas.previsio.com.br/consulta_nr04" target="_blank">ferramentas.previsio.com.br/consulta_nr04</a></p>
+            <p>Gerado em <a href="https://ferramentas.previsio.com.br/consulta_nr04" target="_blank">ferramentas.previsio.com.br/consulta_nr04</a></p>
+            <p>no dia {{dateTimeReport}}</p>
         </footer>
     </body>
 </html>
