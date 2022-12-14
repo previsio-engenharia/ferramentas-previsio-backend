@@ -34,6 +34,9 @@ Instalar got para realizar GET request (HTTP)   ?????????????
 Instalar lib para pegar data e hora
 ### npm install date-and-time --save
 
+Instalar lib para enviar email
+### npm install nodemailer
+
 
 
 o script insert_nr04_table.js é utilizado para inserir dados nas tabelas NR04 do DB, com /models/NR04_Sesmt para a tabela de dimensionamento do Sesmt e /models/NR04_Cnae_Gr para relação do Cnae com grau de risco.

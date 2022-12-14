@@ -5,7 +5,7 @@ const https = require('https');
 
 const got = require('got');
 
-const date = require('date-and-time')
+const date = require('date-and-time');
 
 //const Home = require('./models/Home');
 //const MsgContact = require('./models/MsgContact');
@@ -33,36 +33,6 @@ app.use((req, res, next) => {
     next();
 });
 
-/*
-//home page
-app.get('/', async (req,res) => {
-    /*return res.json({
-        erro: false,
-        datahome: {
-            text_one: "Temos a solução", 
-            text_two: "que a sua empresa precisa", 
-            text_three: "Podemos ajudar a sua empresa!",
-            btn_title:"Entrar em Contato", 
-            btn_link:"http://localhost:3000/contato"
-        }
-    })
-    await Home.findOne({
-        //seleção das colunas que são necessárias
-        attributes: ['text_one', 'text_two', 'text_three', 'btn_title', 'btn_link']
-    })
-    .then((dataHome) => {
-        return res.json({
-            erro: false,
-            dataHome
-        })
-    }).catch(()=>{
-        return res.status(400).json({
-            erro: true,
-            mensagem: "Erro: Nenhum valor encontrado para a página Home"
-        })
-    })
-})
-*/
 
 //consulta DB NR04-SESMT
 app.post('/nr04-05-consulta', async (req,res) =>{
