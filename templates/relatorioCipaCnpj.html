@@ -2,7 +2,7 @@
 <html lang="pt-br">
     <head>
         <meta charset="utf-8">
-        <title>Relatório SESMT</title>
+        <title>Relatório CIPA</title>
         <style>
             body{ 
                 min-width: 19cm;
@@ -36,9 +36,17 @@
                 width: 35%;
                 text-align: left;                
             }
+            .tableHeader2{
+                width: 32.5%;
+                text-align: right;                
+            }
             .header .infoPrevisio, .tableInfo{
                 width: 65%;
                 text-align: right;                
+            }
+            .header .infoPrevisio, .tableInfo2{
+                width: 32.5%;
+                text-align: right;
             }
             .header .infoPrevisio p{
                 padding: 0px;
@@ -74,7 +82,7 @@
                 font-size: 18px;
             }
 
-            .tableHeader, .tableInfo{
+            .tableHeader, .tableInfo, .tableHeader2, .tableInfo2{
                 padding: 5px 20px;
                 font-size: 12px;
                 border-bottom: 1px solid #ccc;
@@ -114,24 +122,24 @@
             <table>
                 <tbody>
                     <tr class="header">
-                        <td class="logoPrevisio">
+                        <td class="logoPrevisio" >
                             <img src="https://raw.githubusercontent.com/joeldc94/test-nextjs/master/public/logo_previsio_azul.png" style="width:100%; max-width:200px;">
                         </td>
-                        <td class="infoPrevisio">
+                        <td class="infoPrevisio" colspan="2">
                             <p><a target="_blank" href="https://previsio.com.br">Previsio Engenharia</a></p>
                             <p>Rua Julio de Castilhos, 45, bairro Niterói</p>
                             <p>Canoas - RS</p>
                         </td>
                     </tr>
                     <tr class="title">
-                        <td colspan="2">
-                            <h2>CONSULTA NR04: EQUIPE SESMT</h2>
-                            <p>Esta Norma estabelece os parâmetros e os requisitos para constituição e manutenção dos Serviços Especializados em Segurança e Medicina do Trabalho - SESMT, com a finalidade de promover a saúde e proteger a integridade do trabalhador.</p>
+                        <td colspan="3">
+                            <h2>CONSULTA NR05: EQUIPE CIPA</h2>
+                            <p>Esta Norma estabelece os parâmetros e os requisitos da Comissão Interna de Prevenção de Acidentes – CIPA, tendo por objetivo a prevenção de acidentes e doenças relacionadas ao trabalho, de modo a tornar compatível, permanentemente, o trabalho com a preservação da vida e promoção da saúde do trabalhador.</p>
                             <p>Os dados deste documento foram consultados a partir do CNPJ e da quantidade de trabalhadores na empresa, fornecidos pelo usuário requisitante. Os dados relativos ao CNPJ informado são públicos, disponibilizados pela Receita Federal, e podem estar desatualizados.</p>
                         </td>                    
                     </tr>
                     <tr class="title2">
-                        <td colspan="2">
+                        <td colspan="3">
                             <h3>CARACTERÍSTICAS DA EMPRESA</h3>
                         </td>
                     </tr>
@@ -140,7 +148,7 @@
                         <th class="tableHeader">
                             CNPJ
                         </th>
-                        <td class="tableInfo">
+                        <td class="tableInfo" colspan="2">
                             {{cnpj}}                            
                         </td>
                     </tr>
@@ -148,7 +156,7 @@
                         <th class="tableHeader">
                             Razão Social
                         </th>
-                        <td class="tableInfo">
+                        <td class="tableInfo" colspan="2">
                             {{razaoSocial}}
                         </td>
                     </tr>
@@ -156,7 +164,7 @@
                         <th class="tableHeader">
                             Nome Fantasia
                         </th>
-                        <td class="tableInfo">
+                        <td class="tableInfo" colspan="2">
                             {{nomeFantasia}}
                         </td>
                     </tr>
@@ -164,7 +172,7 @@
                         <th class="tableHeader">
                             Porte da Empresa
                         </th>
-                        <td class="tableInfo">
+                        <td class="tableInfo" colspan="2">
                             {{porte}}
                         </td>
                     </tr>
@@ -172,7 +180,7 @@
                         <th class="tableHeader">
                             CNAE Principal
                         </th>
-                        <td class="tableInfo">
+                        <td class="tableInfo" colspan="2">
                             {{codigoCnaeFiscal}}
                         </td>
                     </tr>
@@ -180,7 +188,7 @@
                         <th class="tableHeader">
                             Denominação
                         </th>
-                        <td class="tableInfo">
+                        <td class="tableInfo" colspan="2">
                             {{descricaoCnaeFiscal}}
                         </td>
                     </tr>
@@ -188,7 +196,7 @@
                         <th class="tableHeader">
                             Grau de Risco da Empresa
                         </th>
-                        <td class="tableInfo">
+                        <td class="tableInfo" colspan="2">
                             {{maiorGrauRisco}}
                         </td>
                     </tr>
@@ -196,87 +204,69 @@
                         <th class="tableHeader">
                             Quantidade de Trabalhadores
                         </th>
-                        <td class="tableInfo">
+                        <td class="tableInfo" colspan="2">
                             {{nroTrabalhadores}}
                         </td>
                     </tr>                
                     <tr class="title2">
-                        <td colspan="2">
-                            <h3>EQUIPE SESMT NECESSÁRIA</h3>
+                        <td colspan="3">
+                            <h3>EQUIPE CIPA NECESSÁRIA</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader"></th>
+                        <th class="tableHeader2">
+                            Representantes da organização
+                        </th>
+                        <th class="tableHeader2">
+                            Representantes dos empregados
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Membros da equipe efetiva
+                        </th>
+                        <td class="tableInfo2">
+                            {{cipaEfetivos}}
+                        </td>
+                        <td class="tableInfo2">
+                            {{cipaEfetivos}}
                         </td>
                     </tr>
                     <tr>
                         <th class="tableHeader">
-                            Técnicos de Segurança
+                            Membros da equipe suplente
                         </th>
-                        <td class="tableInfo">
-                            {{tecnicoSeg}}
+                        <td class="tableInfo2">
+                            {{cipaSuplentes}}
                         </td>
-                    </tr>
-                    <tr>
-                        <th class="tableHeader">
-                            Engenheiros de Segurança
-                        </th>
-                        <td class="tableInfo">
-                            {{engenheiroSeg}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="tableHeader">
-                            Auxiliares/Técnicos de Enfermagem
-                        </th>
-                        <td class="tableInfo">
-                            {{auxTecEnfermagem}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="tableHeader">
-                            Enfermeiros
-                        </th>
-                        <td class="tableInfo">
-                            {{enfermeiro}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="tableHeader">
-                            Médicos
-                        </th>
-                        <td class="tableInfo">
-                            {{medico}}
+                        <td class="tableInfo2">
+                            {{cipaSuplentes}}
                         </td>
                     </tr>
                 </tbody>
 
                 <tfooter class="tableFoot">
+                    <tr>
+                        <td colspan="3">
+                            <p class="obs">Os representantes da organização na CIPA, titulares e suplentes, serão por ela designados.<br/>Os representantes dos empregados, titulares e suplentes, serão eleitos em escrutínio secreto, do qual participem, independentemente de filiação sindical, exclusivamente os empregados interessados.</p>
+                        </td>
+                    </tr>
                     {{#if dispensaPGR}}
                         <tr>
-                            <td colspan="2">
+                            <td colspan="3">
                                 <p class="obs">Com as características encontradas, a empresa consultada <strong>dispensa a elaboração de PGR</strong>. Também está dispensada da elaboração de PCMSO, desde que <strong>não</strong> sejam identificados riscos físicos, químicos, biológicos ou relacionados a fatores ergonômicos.
                                 </p>
                                 <p class="obs">Para a comprovação desta dispensa, é necessária a elaboração da <strong>Declaração de Inexistência de Riscos</strong>.</p>
                             </td>
                         </tr>        
                     {{/if}}
-                    {{#if obsSesmt1}}
-                        <tr>
-                            <td colspan="2">
-                                <p class="obs">(*) Tempo parcial (mínimo de três horas)</p>
-                            </td>
-                        </tr>
-                    {{/if}}
-                    {{#if obsSesmt3}}
-                        <tr>
-                            <td colspan="2">
-                                <p class="obs">(***) O empregador pode optar pela contratação de um enfermeiro do trabalho em tempo parcial, em substituição ao auxiliar ou técnico de enfermagem do trabalho</p>
-                            </td>
-                        </tr>
-                    {{/if}}
                 </tfooter>
                               
             </table>
         </section>
         <footer>
-            <p>Gerado em <a href="https://ferramentas.previsio.com.br/consulta_nr04" target="_blank">ferramentas.previsio.com.br/consulta_nr04</a></p>
+            <p>Gerado em <a href="https://ferramentas.previsio.com.br/consulta_nr05" target="_blank">ferramentas.previsio.com.br/consulta_nr05</a></p>
             <p>no dia {{dateTimeReport}}</p>
         </footer>
     </body>

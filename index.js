@@ -15,10 +15,7 @@ const NR05_Cipa = require('./models/NR05_Cipa');
 const { Sequelize, Op, DataTypes } = require('sequelize');
 const sequelize = require('./models/db');
 
-
 const pdf = require('./generatePdf');
-
-
 
 app.use(express.json());
 
@@ -33,14 +30,14 @@ app.use((req, res, next) => {
     next();
 });
 
-
 //consulta DB NR04-SESMT
 app.post('/nr04-05-consulta', async (req,res) =>{
-
+    const consulta = req.body.consulta;
     const cnpjInserido = req.body.cnpj;
     const codigoCnae1Inserido = req.body.codigo_cnae1;;
     const codigoCnae2Inserido = req.body.codigo_cnae2;
     const numero_trabalhadores_inserido = req.body.numero_trabalhadores;
+    const userEmail = req.body.userEmail;
 
     var codigosCnaesConsultar = [];     
     
@@ -79,7 +76,6 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         cipaEfetivos: '',
         cipaSuplentes: ''
         */
-        
     };
     //console.log(process.env.URL_API_MINHARECEITA + cnpjInserido);
 
@@ -132,9 +128,15 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                     //console.log('['+i+'] >> ' + consultaCNPJ.codigosCnae[i]);
                 }
 
-                respostaConsultaTabelas.cnpj = response.body.cnpj;
+                //respostaConsultaTabelas.cnpj = response.body.cnpj;
+                respostaConsultaTabelas.cnpj = cnpjInserido;
                 respostaConsultaTabelas.razaoSocial = response.body.razao_social;
                 respostaConsultaTabelas.nomeFantasia = response.body.nome_fantasia;
+
+                 //incluir porte da empresa e opção pelo MEI
+                 respostaConsultaTabelas.porte = response.body.porte;
+                 respostaConsultaTabelas.codigoPorte = response.body.codigo_porte;
+                 respostaConsultaTabelas.mei = response.body.opcao_pelo_mei;
                 
                 //console.log(respostaConsultaTabelas.codigosCnae[0]);
                 //respostaConsultaTabelas.codigosCnae[0] = response.body.cnae_fiscal;
@@ -184,11 +186,8 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         })
     }
 
-
-
     if(!respostaConsultaTabelas.erro)
     {
-        
         //consulta tabela CNAEs
         const cnae_table = await NR04_Cnae_Gr.findAll({
             //consulta linha para encontrar o CNAE inserido
@@ -225,6 +224,20 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             }
             else{
                 respostaConsultaTabelas.maiorGrauRisco = parseInt(cnae_table[0].grau_risco);
+            }
+            //Se inserido o CNPJ, verifica a opção por dispensar o PGR
+            /*
+            */
+            if(respostaConsultaTabelas.mei){
+                respostaConsultaTabelas.dispensaPGR = true;
+            }
+            else if(respostaConsultaTabelas.codigoPorte == 1 || respostaConsultaTabelas.codigoPorte == 3){
+                if(respostaConsultaTabelas.maiorGrauRisco < 3){
+                    respostaConsultaTabelas.dispensaPGR = true;
+                }
+            }
+            else{
+                respostaConsultaTabelas.dispensaPGR = false;
             }
         })
         .catch(()=>{
@@ -344,7 +357,6 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 respostaConsultaTabelas.mensagem = 'Erro: Nenhum valor encontrado da base de dados da equipe SESMT.'      
             })
         }
-        
     }
     
     if(!respostaConsultaTabelas.erro)
@@ -379,7 +391,6 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 respostaConsultaTabelas.erro = true;
                 respostaConsultaTabelas.mensagem = 'Erro: Nenhum valor encontrado da base de dados da equipe CIPA.'       
             })
-
         }
         else{
             //consulta tabela CIPA
@@ -413,23 +424,40 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         }
     }
 
-    if(!respostaConsultaTabelas.erro){
-        const now  =  new Date();
+    if(!respostaConsultaTabelas.erro && userEmail){
+        //console.log(consulta);
+        const now = new Date();
         const dateTimeReport = date.format(now,'DD/MM/YY [às] HH:mm');
+        
+        const reportPath = './reports/report.pdf';
+        var templatePath;
         console.log(dateTimeReport);
         respostaConsultaTabelas.dateTimeReport = dateTimeReport;
 
+        if(consulta=='nr04'){
+            if(cnpjInserido){
+                templatePath = "./templates/relatorioSesmtCnpj.html";
+            }
+            else{
+                templatePath = "./templates/relatorioSesmtCnae.html";
+            }
+        }else if(consulta=='nr05'){
+            if(cnpjInserido){
+                templatePath = "./templates/relatorioCipaCnpj.html";
+            }
+            else{
+                templatePath = "./templates/relatorioCipaCnae.html";
+            }
+        }else{
+            console.log("não é possivel gerar o relatório")
+            return
+        }
         //chama função para gerar PDF
-        const templatePath = "./templates/relatorioSesmtCnae.html";
-        const reportPath = './reports/report.pdf'
-        pdf.generatePdf(respostaConsultaTabelas, templatePath, reportPath);
-
+        pdf.generatePdf(respostaConsultaTabelas, templatePath, reportPath, userEmail);
     }
-
     //retorno para front
     return res.status(respostaConsultaTabelas.status).json({respostaConsultaTabelas});
 })
-
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {

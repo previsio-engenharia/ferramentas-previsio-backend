@@ -22,17 +22,7 @@ async function getTemplateHtml(tPath) {
     }
 }
 
-async function getTemplateStyle() {
-    console.log("Loading template style in memory");
-    try {
-        const stylePath = path.resolve('./templates/reportStyle.css');
-        return await readFile(stylePath, 'utf8');        
-    } catch (err) {
-        return Promise.reject("Could not load css template");
-    }
-}
-
-async function sendEmail(){
+async function sendEmail(emailAddr){
     let transporter = nodemailer.createTransport({
         name: process.env.MAIL_NAME,
         host: process.env.MAIL_HOST,
@@ -59,10 +49,10 @@ async function sendEmail(){
 
     const mail ={
         from: process.env.MAIL_USER,
-        to: 'joel@previsio.com.br',
-        subject: 'Relatório NR04 - Equipe SESMT',
+        to: emailAddr,
+        subject: 'Previsio - Relatório de Consulta NR',
         text: 'Verifique em anexo o resultado de sua consulta',
-        html: "<h1>Relatório SESMT</h1><p>Obrigado por utilizar nossa ferramenta. Verifique em anexo o relatório de sua consulta.</p><p>Acesse <a target='_blank' href='https://previsio.com.br'>nosso site</a>!</p>",
+        html: "<h1>Relatório de Consulta NR04</h1><p>Obrigado por utilizar nossa ferramenta. Verifique em anexo o relatório de sua consulta.</p><p>Acesse <a target='_blank' href='https://previsio.com.br'>nosso site</a>!</p>",
         attachments: [
             {
                 filename: 'report.pdf',
@@ -80,14 +70,9 @@ async function sendEmail(){
                     + info.response);
         }
     });
-
-
-
 }
 
-
-
-async function generatePdf(data, tPath, rPath) {
+async function generatePdf(data, tPath, rPath, emailAddr) {
     getTemplateHtml(tPath).then(async (res) => {
         // Now we have the html code of our template in res object
         // you can check by logging it on console
@@ -110,7 +95,9 @@ async function generatePdf(data, tPath, rPath) {
         await page.pdf({ path: rPath, format: 'A4' })
         await browser.close();
         console.log("PDF Generated");
-        sendEmail();
+        if(emailAddr){
+            sendEmail(emailAddr, rPath);
+        };
     }).catch(err => {
         console.error(err)
     });
