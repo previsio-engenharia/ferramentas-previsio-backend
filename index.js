@@ -18,8 +18,8 @@ app.use(express.json());
 //app.options('*', cors());
 
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://ferramentas.previsio.com.br");
-    //res.header("Access-Control-Allow-Origin", "*");
+    //res.header("Access-Control-Allow-Origin", "https://ferramentas.previsio.com.br");
+    res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST");
     res.header("Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type, Authorization");
     app.use(cors());
@@ -158,6 +158,10 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 respostaConsultaTabelas.cnpj = response.body.cnpj;
                 respostaConsultaTabelas.razaoSocial = response.body.razao_social;
                 respostaConsultaTabelas.nomeFantasia = response.body.nome_fantasia;
+                //incluir porte da empresa e opção pelo MEI
+                respostaConsultaTabelas.porte = response.body.porte;
+                respostaConsultaTabelas.codigoPorte = response.body.codigo_porte;
+                respostaConsultaTabelas.mei = response.body.opcao_pelo_mei;
                 
                 //console.log(respostaConsultaTabelas.codigosCnae[0]);
                 //respostaConsultaTabelas.codigosCnae[0] = response.body.cnae_fiscal;
@@ -248,6 +252,20 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             }
             else{
                 respostaConsultaTabelas.maiorGrauRisco = parseInt(cnae_table[0].grau_risco);
+            }
+            //Se inserido o CNPJ, verifica a opção por dispensar o PGR
+            /*
+            */
+            if(respostaConsultaTabelas.mei){
+                respostaConsultaTabelas.dispensaPGR = true;
+            }
+            else if(respostaConsultaTabelas.codigoPorte == 1 || respostaConsultaTabelas.codigoPorte == 3){
+                if(respostaConsultaTabelas.maiorGrauRisco < 3){
+                    respostaConsultaTabelas.dispensaPGR = true;
+                }
+            }
+            else{
+                respostaConsultaTabelas.dispensaPGR = false;
             }
         })
         .catch(()=>{
