@@ -18,6 +18,7 @@ const sequelize = require('./models/db');
 const pdf = require('./generatePdf');
 
 app.use(express.json());
+app.use(express.static('public/images'));
 
 //app.options('*', cors());
 
@@ -428,32 +429,51 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         //console.log(consulta);
         const now = new Date();
         const dateTimeReport = date.format(now,'DD/MM/YY [às] HH:mm');
-        
-        const reportPath = './reports/report.pdf';
+        const dateTimeFilename = date.format(now, 'DDMMYY[_]HHmm');
+        var fileName;// = date.format(now, 'DDMMYY[_]HHmm');
         var templatePath;
         console.log(dateTimeReport);
+        
+        var mailInfo = {
+            subject: '',
+            title: '',
+        }
+
+
+        //var reportPath; // = './reports/report.pdf';
+        
         respostaConsultaTabelas.dateTimeReport = dateTimeReport;
 
-        if(consulta=='nr04'){
+        if(consulta=='nr04'){            
             if(cnpjInserido){
-                templatePath = "./templates/relatorioSesmtCnpj.html";
+                const cnpj = cnpjInserido.replace(/\D/g, '');
+                fileName = 'previsio_nr04_'+cnpj+'_'+dateTimeFilename+'.pdf';
+                templatePath = "./templates/relatorioSesmtCnpj.html";                
             }
             else{
+                const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
+                fileName = 'previsio_nr05_'+cnae+'_'+dateTimeFilename+'.pdf';
                 templatePath = "./templates/relatorioSesmtCnae.html";
             }
         }else if(consulta=='nr05'){
+            
             if(cnpjInserido){
+                const cnpj = cnpjInserido.replace(/\D/g, '');
+                fileName = 'previsio_nr05_'+cnpj+'_'+dateTimeFilename+'.pdf';
                 templatePath = "./templates/relatorioCipaCnpj.html";
             }
             else{
+                const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
+                fileName = 'previsio_nr05_'+cnae+'_'+dateTimeFilename+'.pdf';
                 templatePath = "./templates/relatorioCipaCnae.html";
             }
         }else{
             console.log("não é possivel gerar o relatório")
             return
         }
+        //const reportPath = './reports/'+filename;
         //chama função para gerar PDF
-        pdf.generatePdf(respostaConsultaTabelas, templatePath, reportPath, userEmail);
+        pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail);
     }
     //retorno para front
     return res.status(respostaConsultaTabelas.status).json({respostaConsultaTabelas});

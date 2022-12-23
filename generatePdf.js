@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('util');
 
+
+
 var nodemailer = require("nodemailer");
 const SMTPTransport = require('nodemailer/lib/smtp-transport');
 
@@ -22,7 +24,7 @@ async function getTemplateHtml(tPath) {
     }
 }
 
-async function sendEmail(emailAddr){
+async function sendEmail(emailAddr, rPath, filename){
     let transporter = nodemailer.createTransport({
         name: process.env.MAIL_NAME,
         host: process.env.MAIL_HOST,
@@ -46,7 +48,32 @@ async function sendEmail(emailAddr){
         console.log("Server is ready to take our messages");
         }
     });
+    /*
+    var mail;
+    getTemplateHtml("./templates/emailTemplate.html").then(async (res) => {
+        const rPath = __dirname + '/reports/'+filename;
+        console.log("Compiling email template");
+        const template = hb.compile(res, {strict: true});
+        // we have compile our code with handlebars
+        const result = template();
 
+        mail ={
+        from: process.env.MAIL_USER,
+        to: emailAddr,
+        subject: 'Previsio - Relatório de Consulta NR',
+        text: 'Verifique em anexo o resultado de sua consulta',
+        html: result,
+        attachments: [
+            {
+                filename: filename,
+                path: rPath,
+                cid: 'uniq-report.pdf'
+            }
+        ]
+        };
+    });
+    */
+    
     const mail ={
         from: process.env.MAIL_USER,
         to: emailAddr,
@@ -55,12 +82,13 @@ async function sendEmail(emailAddr){
         html: "<h1>Relatório de Consulta NR04</h1><p>Obrigado por utilizar nossa ferramenta. Verifique em anexo o relatório de sua consulta.</p><p>Acesse <a target='_blank' href='https://previsio.com.br'>nosso site</a>!</p>",
         attachments: [
             {
-                filename: 'report.pdf',
-                path: __dirname + '/reports/report.pdf',
+                filename: filename,
+                path: rPath,
                 cid: 'uniq-report.pdf'
             }
         ]
     };
+    
 
     transporter.sendMail(mail, function (error, info) {
         if (error) {
@@ -68,17 +96,29 @@ async function sendEmail(emailAddr){
         } else {
             console.log('Email sent successfully: '
                     + info.response);
+            console.log('Deletar arquivo PDF...');
+            fs.unlink(rPath, deleteFileCallback); 
+            
+            function deleteFileCallback(error){
+                if(error){
+                    console.log("ERRO AO DELETAR ARQUIVO!");
+                    console.log(error.message);
+                }else{
+                    console.log("PDF Deletado com sucesso!!")
+                }
+            }
         }
     });
 }
 
-async function generatePdf(data, tPath, rPath, emailAddr) {
+async function generatePdf(data, tPath, filename, emailAddr) {
     getTemplateHtml(tPath).then(async (res) => {
         // Now we have the html code of our template in res object
         // you can check by logging it on console
         // console.log(res)
 
         //
+        const rPath = __dirname + '/reports/'+filename;
         console.log("Compiling the template with handlebars");
         const template = hb.compile(res, {strict: true});
         // we have compile our code with handlebars
@@ -96,7 +136,7 @@ async function generatePdf(data, tPath, rPath, emailAddr) {
         await browser.close();
         console.log("PDF Generated");
         if(emailAddr){
-            sendEmail(emailAddr, rPath);
+            sendEmail(emailAddr, rPath, filename);
         };
     }).catch(err => {
         console.error(err)
