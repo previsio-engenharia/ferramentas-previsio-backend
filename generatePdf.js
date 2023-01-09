@@ -6,13 +6,14 @@ const utils = require('util');
 
 
 
-var nodemailer = require("nodemailer");
-const SMTPTransport = require('nodemailer/lib/smtp-transport');
+let nodemailer = require("nodemailer");
+//const SMTPTransport = require('nodemailer/lib/smtp-transport');
 
 const readFile = utils.promisify(fs.readFile);
 
 //const templatePath = "./templates/relatorio.html";
 
+//carrega o template no arquivo .html
 async function getTemplateHtml(tPath) {
     console.log("Loading template file in memory")
     try {
@@ -24,18 +25,19 @@ async function getTemplateHtml(tPath) {
     }
 }
 
+//enviar email
 async function sendEmail(emailAddr, rPath, filename){
     let transporter = nodemailer.createTransport({
         name: process.env.MAIL_NAME,
         host: process.env.MAIL_HOST,
         port: process.env.MAIL_PORT,
-        secure: false, // upgrade later with STARTTLS
+        secure: true, // upgrade later with STARTTLS
         auth: {
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PW,
         },
         tls: {
-            rejectUnauthorized: false
+            rejectUnauthorized: true
         }
       });
 
@@ -48,38 +50,17 @@ async function sendEmail(emailAddr, rPath, filename){
         console.log("Server is ready to take our messages");
         }
     });
-    /*
-    var mail;
-    getTemplateHtml("./templates/emailTemplate.html").then(async (res) => {
-        const rPath = __dirname + '/reports/'+filename;
-        console.log("Compiling email template");
-        const template = hb.compile(res, {strict: true});
-        // we have compile our code with handlebars
-        const result = template();
-
-        mail ={
-        from: process.env.MAIL_USER,
-        to: emailAddr,
-        subject: 'Previsio - Relatório de Consulta NR',
-        text: 'Verifique em anexo o resultado de sua consulta',
-        html: result,
-        attachments: [
-            {
-                filename: filename,
-                path: rPath,
-                cid: 'uniq-report.pdf'
-            }
-        ]
-        };
-    });
-    */
     
+    //carrega o corpo do email do arquivo html
+    let body = fs.readFileSync('./templates/emailTemplate.html');
+
     const mail ={
         from: process.env.MAIL_USER,
         to: emailAddr,
         subject: 'Previsio - Relatório de Consulta NR',
-        text: 'Verifique em anexo o resultado de sua consulta',
-        html: "<h1>Relatório de Consulta NR04</h1><p>Obrigado por utilizar nossa ferramenta. Verifique em anexo o relatório de sua consulta.</p><p>Acesse <a target='_blank' href='https://previsio.com.br'>nosso site</a>!</p>",
+        //text: 'Verifique em anexo o resultado de sua consulta',
+        //html: "<h1>Relatório de Consulta NR04</h1><p>Obrigado por utilizar nossa ferramenta. Verifique em anexo o relatório de sua consulta.</p><p>Acesse <a target='_blank' href='https://previsio.com.br'>nosso site</a>!</p>",
+        html: body,
         attachments: [
             {
                 filename: filename,
@@ -88,7 +69,6 @@ async function sendEmail(emailAddr, rPath, filename){
             }
         ]
     };
-    
 
     transporter.sendMail(mail, function (error, info) {
         if (error) {
