@@ -12,6 +12,7 @@ const date = require('date-and-time');
 const NR04_Sesmt = require('./models/NR04_Sesmt');
 const NR04_Cnae_Gr = require('./models/NR04_Cnae_Gr');
 const NR05_Cipa = require('./models/NR05_Cipa');
+const Registro_Consultas = require('./models/Registro_Consulta');
 const { Sequelize, Op, DataTypes } = require('sequelize');
 const sequelize = require('./models/db');
 
@@ -31,6 +32,19 @@ app.use((req, res, next) => {
     next();
 });
 
+
+/*
+*
+*
+*
+*
+*
+*/
+app.get('/cafe', async (req, res) => {
+    return res.status(418).json('The server refuses the attempt to brew coffee with a teapot.');
+});
+
+
 //consulta DB NR04-SESMT
 app.post('/nr04-05-consulta', async (req,res) =>{
     const consulta = req.body.consulta;
@@ -39,8 +53,9 @@ app.post('/nr04-05-consulta', async (req,res) =>{
     const codigoCnae2Inserido = req.body.codigo_cnae2;
     const numero_trabalhadores_inserido = req.body.numero_trabalhadores;
     const userEmail = req.body.userEmail;
+    let status_consulta = 10;
 
-    var codigosCnaesConsultar = [];     
+    var codigosCnaesConsultar = [];
     
     var consultaCNPJ ={
         codigosCnae: [],
@@ -59,48 +74,24 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         codigoCnae: [],
         descricaoCnae: [],
         graudeRisco: []
-        
-        /*
-        cnae: '',
-        denominacao: '',
-        grauDeRisco: '',
-        
-        nroTrabalhadoresMinSesmt: '',
-        nroTrabalhadoresMaxSesmt: '',
-        tecnicoSeg: '',
-        engenheiroSeg: '',
-        auxTecEnfermagem: '',
-        enfermeiro: '',
-        medico: '',
-        nroTrabalhadoresMinCipa: '',
-        nroTrabalhadoresMaxCipa: '',
-        cipaEfetivos: '',
-        cipaSuplentes: ''
-        */
     };
-    //console.log(process.env.URL_API_MINHARECEITA + cnpjInserido);
 
     if(cnpjInserido){
-        //consulta informações no CNPJ inserido na API minhareceita.org
-       
-        //try{
-        //console.log('CNPJ INSERIDO! ==> ' + cnpjInserido);
+        //consulta informações no CNPJ inserido na API minhareceita.org       
         try{
             const serviceOnline = await got(process.env.URL_API_MINHARECEITA + 'updated', { json: true });
             if(serviceOnline.statusCode != 200)
             {
+                status_consulta = 51; //não foi possivel acessar a  API para consulta CNPJ
                 respostaConsultaTabelas.status = 400;
                 respostaConsultaTabelas.erro = true;
                 respostaConsultaTabelas.mensagem = 'Erro: não foi possível acessar a consulta do CNPJ. Considere realizar a consulta com o código CNAE, ou tente novamente mais tarde.';
             }
             else{
                 consultaCNPJ.dataUpdate = serviceOnline.body.message;
-                //console.log(consultaCNPJ.dataUpdate);
             }
-            //console.log(serviceOnline.statusCode);
-            //console.log(response.body.cnae_fiscal);
         }catch(error){
-            //console.log(error);
+            status_consulta = 51; //não foi possivel acessar a  API para consulta CNPJ
             respostaConsultaTabelas.status = 400;
             respostaConsultaTabelas.erro = true;
             respostaConsultaTabelas.mensagem = 'Erro: não foi possível acessar a consulta do CNPJ. Considere realizar a consulta com o código CNAE ou tente novamente mais tarde.';
@@ -110,13 +101,10 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             try {
                 //GET request na API
                 const response = await got(process.env.URL_API_MINHARECEITA + cnpjInserido, { json: true });
-                //console.log(response);
-                //console.log(response.body.cnae_fiscal);
                 const c = JSON.stringify(response.body.cnae_fiscal);
                 //formata o CNAE principal para o formato ab.cd-e, conforme inserido na tabela do grau de risco na NR04
                 consultaCNPJ.codigosCnae[0] = c.charAt(0)+c.charAt(1)+'.'+c.charAt(2)+c.charAt(3)+'-'+c.charAt(4);
                 consultaCNPJ.descricaoCnae[0] = response.body.cnae_fiscal_descricao;
-                //console.log('[0] >> '+consultaCNPJ.codigosCnae[0]);
                 respostaConsultaTabelas.codigoCnaeFiscal = consultaCNPJ.codigosCnae[0];
                 respostaConsultaTabelas.descricaoCnaeFiscal = consultaCNPJ.descricaoCnae[0];
 
@@ -126,10 +114,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                     var cAux = JSON.stringify(response.body.cnaes_secundarios[i].codigo);
                     consultaCNPJ.codigosCnae[i + 1] = cAux.charAt(0)+cAux.charAt(1)+'.'+cAux.charAt(2)+cAux.charAt(3)+'-'+cAux.charAt(4);
                     consultaCNPJ.descricaoCnae[i + 1] = response.body.cnaes_secundarios[i].descricao;
-                    //console.log('['+i+'] >> ' + consultaCNPJ.codigosCnae[i]);
                 }
-
-                //respostaConsultaTabelas.cnpj = response.body.cnpj;
                 respostaConsultaTabelas.cnpj = cnpjInserido;
                 respostaConsultaTabelas.razaoSocial = response.body.razao_social;
                 respostaConsultaTabelas.nomeFantasia = response.body.nome_fantasia;
@@ -138,11 +123,9 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                  respostaConsultaTabelas.porte = response.body.porte;
                  respostaConsultaTabelas.codigoPorte = response.body.codigo_porte;
                  respostaConsultaTabelas.mei = response.body.opcao_pelo_mei;
-                
-                //console.log(respostaConsultaTabelas.codigosCnae[0]);
-                //respostaConsultaTabelas.codigosCnae[0] = response.body.cnae_fiscal;
             } catch (error) {
                 //console.log(error);
+                status_consulta = 52; // CNPJ consultado na API mas não encontrado
                 respostaConsultaTabelas.status = 400;
                 respostaConsultaTabelas.erro = true;
                 respostaConsultaTabelas.mensagem = 'Erro: não foi possível consultar o CNPJ informado';
@@ -166,6 +149,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             if(codigoCnae2Inserido){
                 codigosCnaesConsultar[0] = codigoCnae2Inserido;
             }else{
+                status_consulta = 53; // Código CNAE não identificado
                 respostaConsultaTabelas.status = 400;
                 respostaConsultaTabelas.erro = true;
                 respostaConsultaTabelas.mensagem = 'Erro: não foi possível identificar o código CNAE relacionado';
@@ -180,6 +164,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         .then(() => {
             //console.log("Conexão com banco de dados realizada com sucesso!");
         }).catch(() => {
+            status_consulta = 50; // Não foi possível conectar ao banco de dados
             respostaConsultaTabelas.status = 400;
             respostaConsultaTabelas.erro = true;
             respostaConsultaTabelas.mensagem = 'Erro: não foi possível connectar ao banco de dados';
@@ -203,14 +188,6 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             },
             //retorna os atributos listados
             attributes: ['id', 'codigo_cnae', 'denominacao', 'grau_risco']
-
-            /*
-            where:{
-                "codigo_cnae": codigoCnae1Inserido,
-            },
-            //retorna os atributos listados
-            attributes: ['id', 'codigo_cnae', 'denominacao', 'grau_risco']
-            */
         })
         .then((cnae_table) => {
             for(var i=0;i<cnae_table.length;i++){
@@ -243,6 +220,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         })
         .catch(()=>{
             //se ocorreu algum erro, preenche informações para retornar ao front
+            status_consulta = 54; // CNAE informado não encontrado no DB
             respostaConsultaTabelas.status = 400;
             respostaConsultaTabelas.erro = true;
             respostaConsultaTabelas.mensagem = 'Erro: Nenhum valor encontrado com o CNAE informado.'
@@ -315,6 +293,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             })
             .catch(()=>{
                 //se ocorreu algum erro, preenche informações para retornar ao front
+                status_consulta = 55; // Não foi possível realizar correspondência na tabela SESMT
                 respostaConsultaTabelas.status = 400;
                 respostaConsultaTabelas.erro = true;
                 respostaConsultaTabelas.mensagem = 'Erro: Nenhum valor encontrado da base de dados da equipe SESMT.'      
@@ -353,6 +332,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             })
             .catch(()=>{
                 //se ocorreu algum erro, preenche informações para retornar ao front
+                status_consulta = 55; // Não foi possível realizar correspondência na tabela SESMT
                 respostaConsultaTabelas.status = 400;
                 respostaConsultaTabelas.erro = true;
                 respostaConsultaTabelas.mensagem = 'Erro: Nenhum valor encontrado da base de dados da equipe SESMT.'      
@@ -388,6 +368,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             })
             .catch(()=>{
                 //se ocorreu algum erro, preenche informações para retornar ao front
+                status_consulta = 56; // Não foi possível realizar correspondência na tabela CIPA
                 respostaConsultaTabelas.status = 400;
                 respostaConsultaTabelas.erro = true;
                 respostaConsultaTabelas.mensagem = 'Erro: Nenhum valor encontrado da base de dados da equipe CIPA.'       
@@ -418,6 +399,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             })
             .catch(()=>{
                 //se ocorreu algum erro, preenche informações para retornar ao front
+                status_consulta = 56; // Não foi possível realizar correspondência na tabela CIPA
                 respostaConsultaTabelas.status = 400;
                 respostaConsultaTabelas.erro = true;
                 respostaConsultaTabelas.mensagem = 'Erro: Nenhum valor encontrado da base de dados da equipe CIPA.'       
@@ -439,6 +421,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             title: '',
         }
 
+        let emailBodyPath = '';
 
         //var reportPath; // = './reports/report.pdf';
         
@@ -452,9 +435,10 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             }
             else{
                 const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
-                fileName = 'previsio_nr05_'+cnae+'_'+dateTimeFilename+'.pdf';
+                fileName = 'previsio_nr04_'+cnae+'_'+dateTimeFilename+'.pdf';
                 templatePath = "./templates/relatorioSesmtCnae.html";
             }
+            emailBodyPath = './templates/emailTemplate.html';
         }else if(consulta=='nr05'){
             
             if(cnpjInserido){
@@ -467,14 +451,34 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 fileName = 'previsio_nr05_'+cnae+'_'+dateTimeFilename+'.pdf';
                 templatePath = "./templates/relatorioCipaCnae.html";
             }
+            emailBodyPath = './templates/emailTemplate.html';
         }else{
-            console.log("não é possivel gerar o relatório")
+            console.log("não é possivel gerar o relatório");
             return
         }
         //const reportPath = './reports/'+filename;
         //chama função para gerar PDF
-        pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail);
+        pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath);
     }
+
+    /*
+    * SALVAR REGISTRO DA CONSULTA NO DB
+    */
+
+    if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
+        const registro = await Registro_Consultas.create({
+            tipo: consulta,
+            status: status_consulta,
+            cnpj: cnpjInserido,
+            cnae1: codigoCnae1Inserido,
+            cnae2: codigoCnae2Inserido,
+            nro_trabalhadores: numero_trabalhadores_inserido,
+            email: userEmail
+        });
+        //console.log(registro); 
+    }
+
+
     //retorno para front
     return res.status(respostaConsultaTabelas.status).json({respostaConsultaTabelas});
 })

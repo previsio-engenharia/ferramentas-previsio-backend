@@ -12,12 +12,12 @@ const sequelize = new Sequelize('previsio_db', 'root', 'Previsio2022', {
 */
 //conexão utilizando variáveis no .env
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialectOptions: { 
-    ssl: { // utilizar este parametro para conectar no PlanetScale. Estudar mais tarde
-      rejectUnauthorized: false,
-    }
-  },
-  dialectModule: require('mysql2') //necessário adicionar a dependencia aqui para deploy no Vercel
+    dialectOptions: { 
+        ssl: { // utilizar este parametro para conectar no PlanetScale. Estudar mais tarde
+          rejectUnauthorized: false,
+        }
+    },
+    dialectModule: require('mysql2') //necessário adicionar a dependencia aqui para deploy no Vercel
 })
 
 sequelize.authenticate()

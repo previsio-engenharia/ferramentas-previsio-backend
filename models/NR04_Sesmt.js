@@ -49,3 +49,23 @@ NR04_Sesmt.sync();
 //NR04_Sesmt.sync({alter:true})
 
 module.exports = NR04_Sesmt;
+
+
+/*
+CREATE TABLE `nr04_dimensionamento_sesmts` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`grau_risco` int,
+	`nro_trabalhadores_min` int,
+	`nro_trabalhadores_max` int,
+	`tecnico_seg` varchar(255),
+	`engenheiro_seg` varchar(255),
+	`aux_tec_enfermagem` varchar(255),
+	`enfermeiro` varchar(255),
+	`medico` varchar(255),
+	`createdAt` datetime NOT NULL,
+	`updatedAt` datetime NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE InnoDB,
+  CHARSET utf8mb4,
+  COLLATE utf8mb4_0900_ai_ci;
+*/

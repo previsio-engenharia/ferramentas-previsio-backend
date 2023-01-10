@@ -29,3 +29,17 @@ NR04_Cnae_Gr.sync();
 //NR04_Cnae_Gr.sync({alter:true})
 
 module.exports = NR04_Cnae_Gr;
+
+/*
+CREATE TABLE `nr04_relacao_cnae_grs` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`codigo_cnae` varchar(255),
+	`denominacao` varchar(255),
+	`grau_risco` varchar(255),
+	`createdAt` datetime NOT NULL,
+	`updatedAt` datetime NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE InnoDB,
+  CHARSET utf8mb4,
+  COLLATE utf8mb4_0900_ai_ci;
+*/
