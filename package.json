@@ -4,7 +4,7 @@
   "description": "Server para ferramentas de consulta que rodam no site da Previsio Engenharia",
   "main": "index.js",
   "engines": {
-    "node": "16.x"
+    "node": "18.x"
   },
   "scripts": {
     "start": "node index.js"
@@ -27,7 +27,7 @@
     "handlebars": "^4.7.7",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.8.0",
-    "puppeteer": "^19.4.0",
+    "puppeteer": "^16.2.0",
     "sequelize": "^6.25.5"
   },
   "devDependencies": {
