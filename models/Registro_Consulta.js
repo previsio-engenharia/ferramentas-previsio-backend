@@ -35,10 +35,10 @@ const Registro_Consulta = db.define('registro_consultas', {
 });
 
 //Cria a tabela do DB se não existe
-//MsgContact.sync();
+Registro_Consulta.sync();
 
 //Realiza alterações na tabela conforme implementado
-Registro_Consulta.sync({alter:true})
+//Registro_Consulta.sync({alter:true})
 
 module.exports = Registro_Consulta;
 
