@@ -1,7 +1,13 @@
-const puppeteer = require('puppeteer');
+//const puppeteer = require('puppeteer');
 
 //import * as puppeteer from 'puppeteer';
 //const chromium = require('chrome-aws-lambda');
+
+//const edgeChromium = require('chrome-aws-lambda');
+
+//const puppeteer = require('puppeteer-core');
+
+const html_to_pdf = require('html-pdf-node');
 
 const hb = require('handlebars');
 const fs = require('fs');
@@ -151,23 +157,49 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
         //console.log(result);
         // We can use this to add dyamic data to our handlebas template at run time from database or API as per need. you can read the official doc to learn more https://handlebarsjs.com/
         const html = result;
+
+        console.log(html);
         // we are using headless mode
-        const browser = await puppeteer.launch();
         /*
-        const browser = await chromium.puppeteer.launch({
-            args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
-            headless: true,
-            ignoreHTTPSErrors: true
-          });
-          */
-        const page = await browser.newPage()
+        const browser = await puppeteer.launch();
+        */
+        /*
+        const executablePath = await edgeChromium.executablePath;
+        const browser = await puppeteer.launch({
+            executablePath,
+            args: edgeChromium.args,
+            headless: false,
+        });
+          
+        const page = await browser.newPage();
         // We set the page content as the generated html by handlebars
         await page.setContent(html)
         // We use pdf function to generate the pdf in the same folder as this file.
         await page.pdf({ path: rPath, format: 'A4' })
         await browser.close();
+        */
+
+        let pdfOptions = { 
+            format: 'A4',
+            path: rPath
+        };
+        // Example of options with args //
+        // let options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
+
+        let reportHtmlFile = { content: html };
+        
+        try {
+            html_to_pdf.generatePdf(reportHtmlFile, pdfOptions).then(pdfBuffer => {
+                console.log("PDF Buffer:-", pdfBuffer);});
+            //console.log('PDF gerado com sucesso');
+        }
+        catch(err){
+            console.log(err);
+        }
+
+
+
+
         console.log("PDF Generated");
         if(emailAddr){
             sendEmail(emailAddr, rPath, filename, emailBodyPath);
