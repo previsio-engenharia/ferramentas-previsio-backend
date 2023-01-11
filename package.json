@@ -4,7 +4,7 @@
   "description": "Server para ferramentas de consulta que rodam no site da Previsio Engenharia",
   "main": "index.js",
   "engines": {
-    "node": "18.x"
+    "node": "16.x"
   },
   "scripts": {
     "start": "node index.js"
