@@ -428,17 +428,17 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         //var reportPath; // = './reports/report.pdf';
         
         respostaConsultaTabelas.dateTimeReport = dateTimeReport;
-
+        //console.log(process.cwd());
         if(consulta=='nr04'){            
             if(cnpjInserido){
                 const cnpj = cnpjInserido.replace(/\D/g, '');
                 fileName = 'previsio_nr04_'+cnpj+'_'+dateTimeFilename+'.pdf';
-                templatePath = "../templates/relatorioSesmtCnpj.html";                
+                templatePath = process.cwd()+"/templates/relatorioSesmtCnpj.html";                
             }
             else{
                 const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
                 fileName = 'previsio_nr04_'+cnae+'_'+dateTimeFilename+'.pdf';
-                templatePath = "../templates/relatorioSesmtCnae.html";
+                templatePath = "/templates/relatorioSesmtCnae.html";
             }
             emailBodyPath = '../templates/emailTemplate.html';
         }else if(consulta=='nr05'){
