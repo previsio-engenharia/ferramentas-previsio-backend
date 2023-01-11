@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Relatório CIPA</title>
+        <style>
+            body{ 
+                min-width: 19cm;
+                min-height: 27cm;
+                height: 100%;
+                margin: 1cm;
+                font-family: 'Times New Roman', Times, serif;
+                color: #333;
+                border: 1px solid black;
+            }
+            .page{
+                display: table;
+                width: 100%;
+                height: 100%;
+                margin: 0px;
+                padding: 0px;
+                /*border: 1px solid black;*/
+            }
+            .page table{
+                /*border: 1px solid black;*/
+                padding: 10px;
+            }         
+            .header{
+                color:#333;
+                width: 100%;
+                margin: 5px;
+                vertical-align: middle;
+                border: 1px solid black;
+            }
+            .header .logoPrevisio, .tableHeader{
+                width: 35%;
+                text-align: left;
+            }
+            .tableHeader2{
+                width: 32.5%;
+                text-align: right;
+            }
+            .header .infoPrevisio, .tableInfo{
+                width: 65%;
+                text-align: right;
+            }
+            .header .infoPrevisio, .tableInfo2{
+                width: 32.5%;
+                text-align: right;
+            }
+            .header .infoPrevisio p{
+                padding: 0px;
+                margin: 0px;
+            }
+            .header .infoPrevisio a{
+                font-weight: 600;
+                text-decoration: none;
+                color: #333;
+            }
+            /**/
+            .page table .title td{                
+                text-align: center;
+                vertical-align: middle;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #ccc;
+            }
+            .page table .title td h2{
+                margin: 0px;
+                padding: 20px 10px 20px 10px;
+                font-size: 18px;
+            }
+            .page table .title td p{
+                padding: 5px 10px;
+                margin: 0px;
+                text-align: justify;
+                font-size: 14px;
+            }
+            /**/
+            .page table .title2 td h3{
+                margin: 0px;
+                padding: 20px 10px 10px 10px;
+                font-size: 18px;
+            }
+
+            .tableHeader, .tableInfo, .tableHeader2, .tableInfo2{
+                padding: 5px 20px;
+                font-size: 12px;
+                border-bottom: 1px solid #ccc;
+            }
+            .obs{
+                font-size: 12px;
+                text-align: justify;
+                margin: 0px;
+                margin-top: 10px;
+                padding: 0 10px;
+            }
+            footer{
+                padding-top: 50px;
+                height: 100;
+                width: 100%;
+               
+            }
+            footer p{
+                text-align: end;
+                font-size: 14px;
+                vertical-align: bottom;
+                color: #333;
+                padding: 0 30px;
+                margin: 0;
+            }
+            footer a{
+                text-decoration: none;
+                color: #333;
+                padding-left: 5px;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <section class="page">
+            <table>
+                <tbody>
+                    <tr class="header">
+                        <td class="logoPrevisio">
+                            <img src="https://raw.githubusercontent.com/joeldc94/test-nextjs/master/public/logo_previsio_azul.png" style="width:100%; max-width:200px;">
+                            
+                        </td>
+                        <td class="infoPrevisio" colspan="2">
+                            <p><a target="_blank" href="https://previsio.com.br">Previsio Engenharia</a></p>
+                            <p>Rua Julio de Castilhos, 45, bairro Niterói</p>
+                            <p>Canoas - RS</p>
+                        </td>
+                    </tr>
+                    <tr class="title">
+                        <td colspan="3">
+                            <h2>CONSULTA NR05: EQUIPE CIPA</h2>
+                            <p>Esta Norma estabelece os parâmetros e os requisitos da Comissão Interna de Prevenção de Acidentes – CIPA, tendo por objetivo a prevenção de acidentes e doenças relacionadas ao trabalho, de modo a tornar compatível, permanentemente, o trabalho com a preservação da vida e promoção da saúde do trabalhador.</p>
+                            <p>Os dados deste documento foram consultados a partir do código CNAE e da quantidade de trabalhadores na empresa, fornecidos pelo usuário requisitante.</p>
+                        </td>                    
+                    </tr>
+                    <tr class="title2">
+                        <td colspan="3">
+                            <h3>CARACTERÍSTICAS DA EMPRESA</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            CNAE Consultado
+                        </th>
+                        <td class="tableInfo" colspan="2">
+                            {{codigoCnae}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Denominação
+                        </th>
+                        <td class="tableInfo" colspan="2">
+                            {{descricaoCnae}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Grau de Risco Associado
+                        </th>
+                        <td class="tableInfo" colspan="2">
+                            {{maiorGrauRisco}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Quantidade de Trabalhadores
+                        </th>
+                        <td class="tableInfo" colspan="2">
+                            {{nroTrabalhadores}}
+                        </td>
+                    </tr>                
+                    <tr class="title2">
+                        <td colspan="3">
+                            <h3>EQUIPE CIPA NECESSÁRIA</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader"></th>
+                        <th class="tableHeader2">
+                            Representantes da organização
+                        </th>
+                        <th class="tableHeader2">
+                            Representantes dos empregados
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Membros da equipe efetiva
+                        </th>
+                        <td class="tableInfo2">
+                            {{cipaEfetivos}}
+                        </td>
+                        <td class="tableInfo2">
+                            {{cipaEfetivos}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Membros da equipe suplente
+                        </th>
+                        <td class="tableInfo2">
+                            {{cipaSuplentes}}
+                        </td>
+                        <td class="tableInfo2">
+                            {{cipaSuplentes}}
+                        </td>
+                    </tr>
+                </tbody>
+
+                <tfooter class="tableFoot">
+                    <tr>
+                        <td colspan="3">
+                            <p class="obs">Os representantes da organização na CIPA, titulares e suplentes, serão por ela designados.<br/>Os representantes dos empregados, titulares e suplentes, serão eleitos em escrutínio secreto, do qual participem, independentemente de filiação sindical, exclusivamente os empregados interessados.</p>
+                        </td>
+                    </tr>
+                </tfooter>
+                              
+            </table>
+
+        </section>
+        <footer>
+            <p>Gerado em <a href="https://ferramentas.previsio.com.br/consulta_nr05" target="_blank">ferramentas.previsio.com.br/consulta_nr05</a></p>
+            <p>no dia {{dateTimeReport}}</p>
+        </footer>
+    </body>
+</html>
