@@ -104,12 +104,13 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 return console.error(err);
             }
             console.log("File saved successfully!");
+             //console.log("PDF Generated");
+            if(emailAddr){
+                sendEmail(emailAddr, rPath, filename, emailBodyPath);
+            };
         });
         
-        //console.log("PDF Generated");
-        if(emailAddr){
-            sendEmail(emailAddr, rPath, filename, emailBodyPath);
-        };
+       
         
        
     }).catch(err => {
