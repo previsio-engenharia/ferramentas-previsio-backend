@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('util');
 //var conversion = require("phantom-html-to-pdf")();
+const { jsPDF } = require("jspdf"); // will automatically load the node version
 
 
 let nodemailer = require("nodemailer");
@@ -127,25 +128,20 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
         */
        
 
-        /*
-        conversion({ 
-            html: result
+        const doc = new jsPDF();
+        //doc.text("Hello world!", 10, 10);
+        //borda
+        doc.setDrawColor(50, 50, 50);
+        doc.rect(10,10, 190, 270);
+        //logo previsio
+        doc.addImage("./public/images/previsio_logo.png", "PNG", 20, 25, 200, 73);
+
+        doc.text('Testando 123456789798798', 105, 20,null,null, 'center');
+        //doc.cell(10, 20, 100, 30, 'teste010203');
         
-        }, function(err, pdf) {
-            if(err){
-                console.log(`Erro na conversão html>pdf: ${err}`);
-            } else {
-                var output = fs.createWriteStream(rPath);
-                //console.log(pdf.logs);
-                //console.log(pdf.numberOfPages);
-                // since pdf.stream is a node.js stream you can use it
-                // to save the pdf to a file (like in this example) or to
-                // respond an http request.
-                pdf.stream.pipe(output);
-                console.log(`PDF gerado!`);
-            }
-        });
-        */
+        
+        doc.save(rPath); // will save the file in the current working directory
+        console.log('PDF gerado');
 
         /*
         //console.log("PDF Generated");
