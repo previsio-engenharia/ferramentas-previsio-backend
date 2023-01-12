@@ -434,7 +434,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 const cnpj = cnpjInserido.replace(/\D/g, '');
                 fileName = 'previsio_nr04_'+cnpj+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + '/templates/relatorioSesmtCnpj.html';
-                console.log(templatePath);
+                //console.log(templatePath);
                 //process.cwd()+"/templates/relatorioSesmtCnpj.html";                
             }
             else{
@@ -462,7 +462,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         }
         //const reportPath = './reports/'+filename;
         //chama função para gerar PDF
-        pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath);
+        await pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath);
     }
 
     /*

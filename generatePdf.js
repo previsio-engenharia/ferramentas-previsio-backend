@@ -86,36 +86,39 @@ async function sendEmail(emailAddr, rPath, filename, emailBodyPath){
 }
 
 async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
-    getTemplateHtml(tPath).then(async (res) => {
-        // Now we have the html code of our template in res object
-        // you can check by logging it on console
-        // console.log(res)
 
-        //
-        const rPath = __dirname + '/reports/'+filename;
-        console.log("Compiling the template with handlebars");
-        const template = hb.compile(res, {strict: true});
-        // we have compile our code with handlebars
-        const result = template(data);
-        //console.log(result);
+    if(emailAddr){
         
-        await fs.writeFile(rPath, result, (err) => {
-            if(err) {
-                return console.error(err);
-            }
-            console.log("File saved successfully!");
-             //console.log("PDF Generated");
-            if(emailAddr){
-                sendEmail(emailAddr, rPath, filename, emailBodyPath);
-            };
+        await getTemplateHtml(tPath).then(async (res) => {
+            // Now we have the html code of our template in res object
+            // you can check by logging it on console
+            // console.log(res)
+    
+            //
+            const rPath = __dirname + '/reports/'+filename;
+            console.log("Compiling the template with handlebars");
+            const template = hb.compile(res, {strict: true});
+            // we have compile our code with handlebars
+            const result = template(data);
+            //console.log(result);
+            
+            await fs.writeFile(rPath, result, (err) => {
+                if(err) {
+                    console.error(err);
+                } else {
+                    console.log("File saved successfully!");
+                    //console.log("PDF Generated");
+                }
+            });           
+        }).catch(err => {
+            console.error(err)
         });
         
-       
-        
-       
-    }).catch(err => {
-        console.error(err)
-    });
+        sendEmail(emailAddr, rPath, filename, emailBodyPath);
+    };
+
+
+    
 }
 
 module.exports = {
