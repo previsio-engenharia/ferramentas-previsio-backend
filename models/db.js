@@ -23,8 +23,9 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 sequelize.authenticate()
 .then(() => {
     console.log("Conexão com banco de dados realizada com sucesso!");
-}).catch(() => {
+}).catch((err) => {
     console.log("Erro: conexão com banco de dados não realizada com sucesso!");
+    console.log(err);
 })
 
 module.exports = sequelize;
