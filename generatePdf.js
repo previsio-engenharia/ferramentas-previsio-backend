@@ -1,19 +1,8 @@
-//const puppeteer = require('puppeteer');
-
-//import * as puppeteer from 'puppeteer';
-//const chromium = require('chrome-aws-lambda');
-
-//const edgeChromium = require('chrome-aws-lambda');
-
-//const puppeteer = require('puppeteer-core');
-
-const html_to_pdf = require('html-pdf-node');
-
 const hb = require('handlebars');
 const fs = require('fs');
 const path = require('path');
 const utils = require('util');
-
+var conversion = require("phantom-html-to-pdf")();
 
 
 let nodemailer = require("nodemailer");
@@ -99,47 +88,6 @@ async function sendEmail(emailAddr, rPath, filename, emailBodyPath){
             });
         }
     });
-    
-    /*
-    //carrega o corpo do email do arquivo html
-    let body = fs.readFileSync(emailBodyPath);
-
-    const mail ={
-        from: process.env.MAIL_USER,
-        to: emailAddr,
-        subject: 'Previsio - Relatório de Consulta NR',
-        //text: 'Verifique em anexo o resultado de sua consulta',
-        //html: "<h1>Relatório de Consulta NR04</h1><p>Obrigado por utilizar nossa ferramenta. Verifique em anexo o relatório de sua consulta.</p><p>Acesse <a target='_blank' href='https://previsio.com.br'>nosso site</a>!</p>",
-        html: body,
-        attachments: [
-            {
-                filename: filename,
-                path: rPath,
-                cid: 'uniq-report.pdf'
-            }
-        ]
-    };
-
-    transporter.sendMail(mail, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent successfully: '
-                    + info.response);
-            console.log('Deletar arquivo PDF...');
-            fs.unlink(rPath, deleteFileCallback); 
-            
-            function deleteFileCallback(error){
-                if(error){
-                    console.log("ERRO AO DELETAR ARQUIVO!");
-                    console.log(error.message);
-                }else{
-                    console.log("PDF Deletado com sucesso!!")
-                }
-            }
-        }
-    });
-    */
 }
 
 async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
@@ -158,7 +106,6 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
         // We can use this to add dyamic data to our handlebas template at run time from database or API as per need. you can read the official doc to learn more https://handlebarsjs.com/
         //const html = result;
 
-        
         // we are using headless mode
         /*
         const browser = await puppeteer.launch();
@@ -178,25 +125,26 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
         await page.pdf({ path: rPath, format: 'A4' })
         await browser.close();
         */
+       
 
-        let pdfOptions = { 
-            format: 'A4',
-            path: rPath
-        };
-        // Example of options with args //
-        // let options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
-
-        let reportHtmlFile = { content: result };
         
-        try {
-            await html_to_pdf.generatePdf(reportHtmlFile, pdfOptions).then(pdfBuffer => {
-                /*console.log("PDF Buffer:-", pdfBuffer);*/});
-            console.log('PDF gerado com sucesso');
-        }
-        catch(err){
-            console.log(err);
-        }
-
+        conversion({ 
+            html: result
+        
+        }, function(err, pdf) {
+            if(err){
+                console.log(`Erro na conversão html>pdf: ${err}`);
+            } else {
+                var output = fs.createWriteStream(rPath);
+                //console.log(pdf.logs);
+                //console.log(pdf.numberOfPages);
+                // since pdf.stream is a node.js stream you can use it
+                // to save the pdf to a file (like in this example) or to
+                // respond an http request.
+                pdf.stream.pipe(output);
+                console.log(`PDF gerado!`);
+            }
+        });
 
 
 

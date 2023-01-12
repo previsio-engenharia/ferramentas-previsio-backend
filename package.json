@@ -25,9 +25,9 @@
     "fs-extra": "^11.1.0",
     "got": "^9.6.0",
     "handlebars": "^4.7.7",
-    "html-pdf-node": "^1.0.8",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.8.0",
+    "phantom-html-to-pdf": "^0.7.0",
     "sequelize": "^6.25.5"
   },
   "keywords": []
