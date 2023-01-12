@@ -36,7 +36,7 @@ async function sendEmail(emailAddr, rPath, filename, emailBodyPath, result){
       });
 
       //console.log('Verificando servidor de emails...');
-        console.log(`Tentativa de email...  ${process.eventNames.MAIL_USER}`);
+        console.log(`Tentativa de email...  ${process.env.MAIL_USER}`);
 
     // verify connection configuration
         //transporter.verify(function (error, success) {
