@@ -2,7 +2,7 @@ const hb = require('handlebars');
 const fs = require('fs');
 const path = require('path');
 const utils = require('util');
-var conversion = require("phantom-html-to-pdf")();
+//var conversion = require("phantom-html-to-pdf")();
 
 
 let nodemailer = require("nodemailer");
@@ -127,7 +127,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
         */
        
 
-        
+        /*
         conversion({ 
             html: result
         
@@ -145,13 +145,15 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 console.log(`PDF gerado!`);
             }
         });
+        */
 
-
-
+        /*
         //console.log("PDF Generated");
         if(emailAddr){
             sendEmail(emailAddr, rPath, filename, emailBodyPath);
         };
+        */
+       
     }).catch(err => {
         console.error(err)
     });
