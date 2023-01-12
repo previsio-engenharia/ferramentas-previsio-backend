@@ -432,14 +432,14 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         if(consulta=='nr04'){            
             if(cnpjInserido){
                 const cnpj = cnpjInserido.replace(/\D/g, '');
-                fileName = 'previsio_nr04_'+cnpj+'_'+dateTimeFilename+'.pdf';
+                fileName = 'previsio_nr04_'+cnpj+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + '/templates/relatorioSesmtCnpj.html';
                 console.log(templatePath);
                 //process.cwd()+"/templates/relatorioSesmtCnpj.html";                
             }
             else{
                 const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
-                fileName = 'previsio_nr04_'+cnae+'_'+dateTimeFilename+'.pdf';
+                fileName = 'previsio_nr04_'+cnae+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + "/templates/relatorioSesmtCnae.html";
             }
             emailBodyPath = __dirname + '/templates/emailTemplate.html';
@@ -447,12 +447,12 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             
             if(cnpjInserido){
                 const cnpj = cnpjInserido.replace(/\D/g, '');
-                fileName = 'previsio_nr05_'+cnpj+'_'+dateTimeFilename+'.pdf';
+                fileName = 'previsio_nr05_'+cnpj+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + "/templates/relatorioCipaCnpj.html";
             }
             else{
                 const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
-                fileName = 'previsio_nr05_'+cnae+'_'+dateTimeFilename+'.pdf';
+                fileName = 'previsio_nr05_'+cnae+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + "/templates/relatorioCipaCnae.html";
             }
             emailBodyPath = __dirname + '/templates/emailTemplate.html';

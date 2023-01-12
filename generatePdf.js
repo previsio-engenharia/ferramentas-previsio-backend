@@ -2,15 +2,10 @@ const hb = require('handlebars');
 const fs = require('fs');
 const path = require('path');
 const utils = require('util');
-//var conversion = require("phantom-html-to-pdf")();
-
 
 let nodemailer = require("nodemailer");
-//const SMTPTransport = require('nodemailer/lib/smtp-transport');
 
 const readFile = utils.promisify(fs.readFile);
-
-//const templatePath = "./templates/relatorio.html";
 
 //carrega o template no arquivo .html
 async function getTemplateHtml(tPath) {
@@ -103,56 +98,19 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
         // we have compile our code with handlebars
         const result = template(data);
         //console.log(result);
-        // We can use this to add dyamic data to our handlebas template at run time from database or API as per need. you can read the official doc to learn more https://handlebarsjs.com/
-        //const html = result;
-
-        // we are using headless mode
-        /*
-        const browser = await puppeteer.launch();
-        */
-        /*
-        const executablePath = await edgeChromium.executablePath;
-        const browser = await puppeteer.launch({
-            executablePath,
-            args: edgeChromium.args,
-            headless: false,
-        });
-          
-        const page = await browser.newPage();
-        // We set the page content as the generated html by handlebars
-        await page.setContent(html)
-        // We use pdf function to generate the pdf in the same folder as this file.
-        await page.pdf({ path: rPath, format: 'A4' })
-        await browser.close();
-        */
-       
-
-        /*
-        conversion({ 
-            html: result
         
-        }, function(err, pdf) {
-            if(err){
-                console.log(`Erro na conversão html>pdf: ${err}`);
-            } else {
-                var output = fs.createWriteStream(rPath);
-                //console.log(pdf.logs);
-                //console.log(pdf.numberOfPages);
-                // since pdf.stream is a node.js stream you can use it
-                // to save the pdf to a file (like in this example) or to
-                // respond an http request.
-                pdf.stream.pipe(output);
-                console.log(`PDF gerado!`);
+        await fs.writeFile(rPath, result, (err) => {
+            if(err) {
+                return console.error(err);
             }
+            console.log("File saved successfully!");
         });
-        */
-
-        /*
+        
         //console.log("PDF Generated");
         if(emailAddr){
             sendEmail(emailAddr, rPath, filename, emailBodyPath);
         };
-        */
+        
        
     }).catch(err => {
         console.error(err)
