@@ -20,7 +20,7 @@ async function getTemplateHtml(tPath) {
 }
 
 //enviar email
-async function sendEmail(emailAddr, rPath, filename, emailBodyPath){
+async function sendEmail(emailAddr, rPath, filename, emailBodyPath, result){
     let transporter = nodemailer.createTransport({
         name: process.env.MAIL_NAME,
         host: process.env.MAIL_HOST,
@@ -35,13 +35,15 @@ async function sendEmail(emailAddr, rPath, filename, emailBodyPath){
         }
       });
 
-      console.log('Verificando servidor de emails...');
+      //console.log('Verificando servidor de emails...');
+        console.log('Tentativa de email...');
+
     // verify connection configuration
-    transporter.verify(function (error, success) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log("Server is ready to take our messages");
+        //transporter.verify(function (error, success) {
+        //    if (error) {
+        //    console.log(error);
+        //} else {
+            //console.log("Server is ready to take our messages");
 
             //carrega o corpo do email do arquivo html
             let body = fs.readFileSync(emailBodyPath);
@@ -52,14 +54,16 @@ async function sendEmail(emailAddr, rPath, filename, emailBodyPath){
                 subject: 'Previsio - Relatório de Consulta NR',
                 //text: 'Verifique em anexo o resultado de sua consulta',
                 //html: "<h1>Relatório de Consulta NR04</h1><p>Obrigado por utilizar nossa ferramenta. Verifique em anexo o relatório de sua consulta.</p><p>Acesse <a target='_blank' href='https://previsio.com.br'>nosso site</a>!</p>",
+                
                 html: body,
                 attachments: [
                     {
                         filename: filename,
-                        path: rPath,
-                        cid: 'uniq-report.pdf'
+                        content: result
+                        //path: rPath
                     }
                 ]
+                
             };
 
             transporter.sendMail(mail, function (error, info) {
@@ -68,6 +72,7 @@ async function sendEmail(emailAddr, rPath, filename, emailBodyPath){
                 } else {
                     console.log('Email sent successfully: '
                             + info.response);
+                            /*
                     console.log('Deletar arquivo PDF...');
                     fs.unlink(rPath, deleteFileCallback); 
                     
@@ -79,10 +84,12 @@ async function sendEmail(emailAddr, rPath, filename, emailBodyPath){
                             console.log("PDF Deletado com sucesso!!")
                         }
                     }
+                    */
+                    
                 }
             });
-        }
-    });
+       // }
+    //});
 }
 
 async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
@@ -101,20 +108,27 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
             // we have compile our code with handlebars
             const result = template(data);
             //console.log(result);
-            
+            sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
+            /*
             await fs.writeFile(rPath, result, (err) => {
                 if(err) {
                     console.error(err);
                 } else {
                     console.log("File saved successfully!");
+                    sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
+
                     //console.log("PDF Generated");
                 }
-            });           
+            });   
+            */
+                   
+
+            //sendEmail(emailAddr, rPath, filename, emailBodyPath);
+
         }).catch(err => {
             console.error(err)
         });
         
-        sendEmail(emailAddr, rPath, filename, emailBodyPath);
     };
 
 
