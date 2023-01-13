@@ -131,7 +131,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
             let body = fs.readFileSync(emailBodyPath, 'utf8');
 
             //console.log(body);
-            
+            console.log('Montando msg do email...')
 
             const msg = {
                 to: emailAddr,
@@ -148,18 +148,10 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                         disposition: 'attachment'
                         //path: rPath
                     }
-                ]
-                
+                ]                
               };
 
               sendMail(msg);
-
-
-            
-
-
-                   
-
             //sendEmail(emailAddr, rPath, filename, emailBodyPath);
 
         }).catch(err => {
@@ -174,6 +166,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
 
 const sendMail = async (msg) => {
     try{
+        console.log('Tentativa de enviar o email...')
         await sgMail.send(msg);
         console.log('Email enviado com sucesso!');
     } catch(error){
