@@ -138,7 +138,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 from: process.env.MAIL_USER, // Use the email address or domain you verified above
                 replyTo: 'ped@previsio.com.br',
                 subject: 'Previsio - Relatório de Consulta NR',
-                //text: 'Teste com SendGrid email',
+                text: 'Teste com SendGrid email'/*
                 html: body,
                 attachments: [
                     {
@@ -148,7 +148,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                         disposition: 'attachment'
                         //path: rPath
                     }
-                ]                
+                ]     */           
               };
 
               sendMail(msg);
@@ -167,7 +167,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
 const sendMail = async (msg) => {
     try{
         console.log('Tentativa de enviar o email...');
-        // sgMail.send(msg);
+        await sgMail.send(msg);
         console.log('Email enviado com sucesso!');
     } catch(error){
         console.log(error);
