@@ -411,7 +411,8 @@ app.post('/nr04-05-consulta', async (req,res) =>{
 
     if(!respostaConsultaTabelas.erro && userEmail){
         //console.log(consulta);
-        const now = new Date();
+        let now = new Date();
+        now = date.addHours(now, -3); //timezone america-sao Paulo
         const dateTimeReport = date.format(now,'DD/MM/YY [às] HH:mm');
         const dateTimeFilename = date.format(now, 'DDMMYY[_]HHmm');
         var fileName;// = date.format(now, 'DDMMYY[_]HHmm');
