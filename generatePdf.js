@@ -3,7 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('util');
 
-let nodemailer = require("nodemailer");
+//let nodemailer = require("nodemailer");
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+var buffer = require('buffer/').Buffer;
 
 const readFile = utils.promisify(fs.readFile);
 
@@ -19,6 +23,8 @@ async function getTemplateHtml(tPath) {
     }
 }
 
+
+/*
 //enviar email
 async function sendEmail(emailAddr, rPath, filename, emailBodyPath, result){
     let transporter = nodemailer.createTransport({
@@ -84,13 +90,14 @@ async function sendEmail(emailAddr, rPath, filename, emailBodyPath, result){
                             console.log("PDF Deletado com sucesso!!")
                         }
                     }
-                    */
+                    //
                     
                 }
             });
        // }
     //});
 }
+*/
 
 async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
 
@@ -108,7 +115,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
             // we have compile our code with handlebars
             const result = template(data);
             //console.log(result);
-            sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
+            //sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
             /*
             await fs.writeFile(rPath, result, (err) => {
                 if(err) {
@@ -121,6 +128,36 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 }
             });   
             */
+            let body = fs.readFileSync(emailBodyPath, 'utf8');
+
+            //console.log(body);
+            
+
+            const msg = {
+                to: emailAddr,
+                from: process.env.MAIL_USER, // Use the email address or domain you verified above
+                replyTo: 'ped@previsio.com.br',
+                subject: 'Previsio - Relatório de Consulta NR',
+                //text: 'Teste com SendGrid email',
+                html: body,
+                attachments: [
+                    {
+                        filename: filename,
+                        content: buffer.from(result).toString('base64'),
+                        type: 'text/html',
+                        disposition: 'attachment'
+                        //path: rPath
+                    }
+                ]
+                
+              };
+
+              sendMail(msg);
+
+
+            
+
+
                    
 
             //sendEmail(emailAddr, rPath, filename, emailBodyPath);
@@ -133,6 +170,18 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
 
 
     
+}
+
+const sendMail = async (msg) => {
+    try{
+        await sgMail.send(msg);
+        console.log('Email enviado com sucesso!');
+    } catch(error){
+        console.log(error);
+        if(error.response){
+            console.log(error.response.body);
+        }
+    }
 }
 
 module.exports = {

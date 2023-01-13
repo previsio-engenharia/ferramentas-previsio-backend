@@ -17,6 +17,8 @@
   "license": "ISC",
   "homepage": "",
   "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
+    "buffer": "^6.0.3",
     "cors": "^2.8.5",
     "date-and-time": "^2.4.1",
     "dotenv": "^16.0.3",
