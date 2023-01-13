@@ -143,7 +143,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 attachments: [
                     {
                         filename: filename,
-                        content: buffer.from(result).toString('base64'),
+                        content: await buffer.from(result).toString('base64'),
                         type: 'text/html',
                         disposition: 'attachment'
                         //path: rPath
@@ -151,7 +151,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 ]                
               };
 
-              await sendMail(msg);
+              sendMail(msg);
             //sendEmail(emailAddr, rPath, filename, emailBodyPath);
 
         }).catch(err => {
@@ -167,8 +167,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
 const sendMail = async (msg) => {
     try{
         console.log('Tentativa de enviar o email...');
-        console.log(process.env.SENDGRID_API_KEY);
-        sgMail.send(msg);
+        // sgMail.send(msg);
         console.log('Email enviado com sucesso!');
     } catch(error){
         console.log(error);
