@@ -166,7 +166,8 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
 
 const sendMail = async (msg) => {
     try{
-        console.log('Tentativa de enviar o email...')
+        console.log('Tentativa de enviar o email...');
+        console.log(process.env.SENDGRID_API_KEY);
         sgMail.send(msg);
         console.log('Email enviado com sucesso!');
     } catch(error){
