@@ -165,16 +165,16 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
 }
 
 const sendMail = async (msg) => {
-    try{
-        console.log('Tentativa de enviar o email...');
-        await sgMail.send(msg);
-        console.log('Email enviado com sucesso!');
-    } catch(error){
-        console.log(error);
-        if(error.response){
-            console.log(error.response.body);
-        }
-    }
+    console.log('Tentativa de enviar o email...');
+    sgMail.send(msg)
+        .then(() => {
+            console.log('Email enviado com sucesso!');
+        }, error => {
+            console.error(error);
+            if (error.response) {
+                console.error(error.response.body)
+            }
+        })
 }
 
 module.exports = {
