@@ -151,7 +151,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 ]     */           
               };
 
-              sendMail(msg);
+              await sendMail(msg);
             //sendEmail(emailAddr, rPath, filename, emailBodyPath);
 
         }).catch(err => {

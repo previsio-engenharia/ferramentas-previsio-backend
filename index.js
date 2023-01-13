@@ -464,12 +464,25 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         //const reportPath = './reports/'+filename;
         //chama função para gerar PDF
         await pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath);
+        
+        if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
+            const registro = await Registro_Consultas.create({
+                tipo: consulta,
+                status: status_consulta,
+                cnpj: cnpjInserido,
+                cnae1: codigoCnae1Inserido,
+                cnae2: codigoCnae2Inserido,
+                nro_trabalhadores: numero_trabalhadores_inserido,
+                email: userEmail
+            });
+            //console.log(registro); 
+        }
     }
 
     /*
     * SALVAR REGISTRO DA CONSULTA NO DB
     */
-
+/*
     if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
         const registro = await Registro_Consultas.create({
             tipo: consulta,
@@ -482,6 +495,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         });
         //console.log(registro); 
     }
+    */
 
 
     //retorno para front
