@@ -4,8 +4,10 @@ const path = require('path');
 const utils = require('util');
 
 //let nodemailer = require("nodemailer");
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+//const sgMail = require('@sendgrid/mail');
+//sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+var conversion = require("phantom-html-to-pdf")();
 
 var buffer = require('buffer/').Buffer;
 
@@ -127,7 +129,7 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                     //console.log("PDF Generated");
                 }
             });   
-            */
+            *//*
             let body = fs.readFileSync(emailBodyPath, 'utf8');
 
             //console.log(body);
@@ -148,14 +150,34 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                         disposition: 'attachment'
                         //path: rPath
                     }
-                ]     */           
+                ]             
               };
 
               await sendMail(msg);
+              */
             //sendEmail(emailAddr, rPath, filename, emailBodyPath);
 
+            await conversion({ html: result }, async function(err, pdf) {
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    console.log('gerando pdf....')
+                    var output = await fs.createWriteStream(rPath)
+                    //console.log(pdf.logs);
+                    //console.log(pdf.numberOfPages);
+                    // since pdf.stream is a node.js stream you can use it
+                    // to save the pdf to a file (like in this example) or to
+                    // respond an http request.
+                    await pdf.stream.pipe(output);
+                }
+            });
+            console.log(rPath);
+            return rPath;
+
         }).catch(err => {
-            console.error(err)
+            console.error(err);
+            return;
         });
         
     };
