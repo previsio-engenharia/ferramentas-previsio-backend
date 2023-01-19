@@ -43,8 +43,14 @@ app.use((req, res, next) => {
 */
 app.get('/cafe', async (req, res) => {
     //res.status(418).json('The server refuses the attempt to brew coffee with a teapot.');
-    res.attachment(__dirname+'/templates/emailTemplate.html').send('123');
-    //res.redirect('https://google.com');
+    //res.attachment(__dirname+'/templates/emailTemplate.html').send();
+    res.download(__dirname+'/abc.pdf', 'relatorio-Top-Secret.pdf', function(err){
+        if(err){
+            console.log(err)
+        }else{
+            console.log('Deu');
+        }
+    });
     //res.json('OK,The server refuses the attempt to brew coffee with a teapot.');
     
     //res.status(418).end();
@@ -443,14 +449,14 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         if(consulta=='nr04'){            
             if(cnpjInserido){
                 const cnpj = cnpjInserido.replace(/\D/g, '');
-                fileName = 'previsio_nr04_'+cnpj+'_'+dateTimeFilename+'.pdf';
+                fileName = 'previsio_nr04_'+cnpj+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + '/templates/relatorioSesmtCnpj.html';
                 //console.log(templatePath);
                 //process.cwd()+"/templates/relatorioSesmtCnpj.html";                
             }
             else{
                 const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
-                fileName = 'previsio_nr04_'+cnae+'_'+dateTimeFilename+'.pdf';
+                fileName = 'previsio_nr04_'+cnae+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + "/templates/relatorioSesmtCnae.html";
             }
             emailBodyPath = __dirname + '/templates/emailTemplate.html';
@@ -458,12 +464,12 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             
             if(cnpjInserido){
                 const cnpj = cnpjInserido.replace(/\D/g, '');
-                fileName = 'previsio_nr05_'+cnpj+'_'+dateTimeFilename+'.pdf';
+                fileName = 'previsio_nr05_'+cnpj+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + "/templates/relatorioCipaCnpj.html";
             }
             else{
                 const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
-                fileName = 'previsio_nr05_'+cnae+'_'+dateTimeFilename+'.pdf';
+                fileName = 'previsio_nr05_'+cnae+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + "/templates/relatorioCipaCnae.html";
             }
             emailBodyPath = __dirname + '/templates/emailTemplate.html';
@@ -485,10 +491,15 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 nro_trabalhadores: numero_trabalhadores_inserido,
                 email: userEmail
             });
-            console.log('CONSULTA: .......................')
-            console.log(registro); 
+            if(registro){
+                console.log('Registro inserido');
+            }
+            //console.log('CONSULTA: .......................')
+            //console.log(registro); 
         }
     }
+
+    /*
     if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
         const registro = await Registro_Consultas.create({
             tipo: consulta,
@@ -502,6 +513,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         //console.log('CONSULTA: .......................')
         respostaConsultaTabelas.id_registro = registro.dataValues.id; 
     }
+    */
 
     /*
     * SALVAR REGISTRO DA CONSULTA NO DB
@@ -530,6 +542,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
 //rota para gerar relatorio em pdf.
 app.post('/nr04-05-relatorio-pdf', async (req,res) =>{
 
+    /*
     console.log(JSON.stringify(req.body));
     let fileName;
     let emailBodyPath = '';
@@ -575,51 +588,11 @@ app.post('/nr04-05-relatorio-pdf', async (req,res) =>{
 
     /*
     let p = await pdf.generatePdf(req.body, templatePath, fileName, userEmail, emailBodyPath);
-    */
-
-
-    p = 'abc.pdf';
-    //console.log(p);
-
-
-    //return res.status(200).json('Retorno a 200m');
-
-
     
 
 
-    if(p){
-        console.log(p);
+    p = 'abc.pdf';
 
-        //var filename = "123.pdf";
-
-        //var stream = fs.createReadStream(p);
-/*
-        stream.pipe(res).once("close", function () {
-            stream.destroy(); // makesure stream closed, not close if download aborted.
-            /*
-            fs.unlink(p, function (err) {
-                if (err) {
-                    console.error(err.toString());
-                } else {
-                    console.warn(p + ' deleted');
-                }
-            });
-            
-        });
-
-*/
-
-        //res.json('teu cu');
-
-        
-        res.download(p, '123.pdf', function(err) {
-            if(err)
-                console.log(err) 
-            else {
-                
-            }
-        });
         
         
     }
@@ -630,6 +603,18 @@ app.post('/nr04-05-relatorio-pdf', async (req,res) =>{
 
     //res.status(200).end();
     //res.attachment(__dirname+'/templates/emailTemplate.html').end();
+
+
+    */
+
+    res.download(__dirname+'/abc.pdf', 'relatorio-Top-Secret.pdf', function(err){
+        if(err){
+            console.log(err)
+        }else{
+            console.log('Deu');
+        }
+    });
+
 });
 
 const port = process.env.PORT || 8080;

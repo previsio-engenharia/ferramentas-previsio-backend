@@ -4,10 +4,10 @@ const path = require('path');
 const utils = require('util');
 
 //let nodemailer = require("nodemailer");
-//const sgMail = require('@sendgrid/mail');
-//sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-var conversion = require("phantom-html-to-pdf")();
+//var conversion = require("phantom-html-to-pdf")();
 
 var buffer = require('buffer/').Buffer;
 
@@ -111,26 +111,27 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
             // console.log(res)
     
             //
-            const rPath = __dirname + '/reports/'+filename;
+            const rPath = '/tmp/'+filename;
             console.log("Compiling the template with handlebars");
             const template = hb.compile(res, {strict: true});
             // we have compile our code with handlebars
             const result = template(data);
             //console.log(result);
             //sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
-            /*
-            await fs.writeFile(rPath, result, (err) => {
+            
+            console.log('Escrever arquivo html');
+            //fs.writeFileSync(rPath, result);
+            fs.writeFileSync(rPath, result, (err) => {
                 if(err) {
-                    console.error(err);
-                } else {
-                    console.log("File saved successfully!");
-                    sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
-
-                    //console.log("PDF Generated");
+                    console.log(err);
                 }
-            });   
-            *//*
+            });
+            
+           
+            console.log('Ler arquivo html do body...');
             let body = fs.readFileSync(emailBodyPath, 'utf8');
+            console.log('Ler arquivo html do anexo...');
+            let attac = fs.readFileSync(rPath, 'base64');
 
             //console.log(body);
             console.log('Montando msg do email...')
@@ -140,12 +141,12 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 from: process.env.MAIL_USER, // Use the email address or domain you verified above
                 replyTo: 'ped@previsio.com.br',
                 subject: 'Previsio - Relatório de Consulta NR',
-                text: 'Teste com SendGrid email'/*
+                text: 'Teste com SendGrid email',
                 html: body,
                 attachments: [
                     {
                         filename: filename,
-                        content: await buffer.from(result).toString('base64'),
+                        content: attac,
                         type: 'text/html',
                         disposition: 'attachment'
                         //path: rPath
@@ -153,9 +154,24 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 ]             
               };
 
-              await sendMail(msg);
-              */
+              //await sendMail(msg);
+              console.log('Enviar email..');
+              try{
+                  sgMail.send(msg).then(() => {
+                      console.log('Email enviado com sucesso!');
+                      fs.unlink(rPath, ()=>{console.log('Arquivo deletado')});
+                      //res.status(200).json('Email enviado com sucesso!');
+                  })    
+              } catch(error){
+                  console.log(error);
+                  if(error.response){
+                      console.log(error.response.body);
+                      //res.status(400).json('Falha ao enviar!');
+                  }
+              } 
+              
             //sendEmail(emailAddr, rPath, filename, emailBodyPath);
+            /*
 
             await conversion({ html: result }, async function(err, pdf) {
                 if(err){
@@ -172,12 +188,13 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                     await pdf.stream.pipe(output);
                 }
             });
-            console.log(rPath);
-            return rPath;
+            */
+            //console.log(rPath);
+            //return rPath;
 
         }).catch(err => {
             console.error(err);
-            return;
+            //return;
         });
         
     };
