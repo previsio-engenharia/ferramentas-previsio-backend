@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const https = require('https');
+const fs = require('fs');
 
 const got = require('got');
 
@@ -13,7 +14,7 @@ const NR04_Sesmt = require('./models/NR04_Sesmt');
 const NR04_Cnae_Gr = require('./models/NR04_Cnae_Gr');
 const NR05_Cipa = require('./models/NR05_Cipa');
 const Registro_Consultas = require('./models/Registro_Consulta');
-const { Sequelize, Op, DataTypes } = require('sequelize');
+const { Sequelize, Op, DataTypes, json } = require('sequelize');
 const sequelize = require('./models/db');
 
 const pdf = require('./generatePdf');
@@ -41,8 +42,21 @@ app.use((req, res, next) => {
 *
 */
 app.get('/cafe', async (req, res) => {
-    return res.status(418).json('The server refuses the attempt to brew coffee with a teapot.');
+    //res.status(418).json('The server refuses the attempt to brew coffee with a teapot.');
+    //res.attachment(__dirname+'/templates/emailTemplate.html').send();
+    res.download(__dirname+'/abc.pdf', 'relatorio-Top-Secret.pdf', function(err){
+        if(err){
+            console.log(err)
+        }else{
+            console.log('Deu');
+        }
+    });
+    //res.json('OK,The server refuses the attempt to brew coffee with a teapot.');
+    
+    //res.status(418).end();
+    //return res;
 });
+
 
 
 //consulta DB NR04-SESMT
@@ -70,6 +84,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         status: 200,
         erro: false,        
         mensagem: '',
+        tipo_consulta: consulta,
         nroTrabalhadores: numero_trabalhadores_inserido,
         codigoCnae: [],
         descricaoCnae: [],
@@ -409,7 +424,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         }
     }
 
-    if(!respostaConsultaTabelas.erro && userEmail){
+    if(!respostaConsultaTabelas.erro){
         //console.log(consulta);
         let now = new Date();
         now = date.addHours(now, -3); //timezone america-sao Paulo
@@ -417,12 +432,13 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         const dateTimeFilename = date.format(now, 'DDMMYY[_]HHmm');
         var fileName;// = date.format(now, 'DDMMYY[_]HHmm');
         var templatePath;
-        console.log(dateTimeReport);
+        console.log(dateTimeFilename);
         
         var mailInfo = {
             subject: '',
             title: '',
         }
+
 
         let emailBodyPath = '';
 
@@ -477,7 +493,40 @@ app.post('/nr04-05-consulta', async (req,res) =>{
 
         //chama função para gerar PDF
         await pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath);
+        
+        if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
+            const registro = await Registro_Consultas.create({
+                tipo: consulta,
+                status: status_consulta,
+                cnpj: cnpjInserido,
+                cnae1: codigoCnae1Inserido,
+                cnae2: codigoCnae2Inserido,
+                nro_trabalhadores: numero_trabalhadores_inserido,
+                email: userEmail
+            });
+            if(registro){
+                console.log('Registro inserido');
+            }
+            //console.log('CONSULTA: .......................')
+            //console.log(registro); 
+        }
     }
+
+    /*
+    if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
+        const registro = await Registro_Consultas.create({
+            tipo: consulta,
+            status: status_consulta,
+            cnpj: cnpjInserido,
+            cnae1: codigoCnae1Inserido,
+            cnae2: codigoCnae2Inserido,
+            nro_trabalhadores: numero_trabalhadores_inserido,
+            email: userEmail
+        });
+        //console.log('CONSULTA: .......................')
+        respostaConsultaTabelas.id_registro = registro.dataValues.id; 
+    }
+    */
 
     /*
     * SALVAR REGISTRO DA CONSULTA NO DB
@@ -489,6 +538,85 @@ app.post('/nr04-05-consulta', async (req,res) =>{
     //retorno para front
     return res.status(respostaConsultaTabelas.status).json({respostaConsultaTabelas});
 })
+
+
+//rota para gerar relatorio em pdf.
+app.post('/nr04-05-relatorio-pdf', async (req,res) =>{
+
+    /*
+    console.log(JSON.stringify(req.body));
+    let fileName;
+    let emailBodyPath = '';
+    let userEmail = 'joel@previsio.com.br';
+
+    //var reportPath; // = './reports/report.pdf';
+    
+    //respostaConsultaTabelas.dateTimeReport = dateTimeReport;
+    //console.log(process.cwd());
+    if(req.body.tipo_consulta =='nr04'){            
+        if(req.body.cnpj){
+            const cnpj = req.body.cnpj.replace(/\D/g, '');
+            fileName = 'previsio_nr04_'+cnpj+'.pdf';
+            templatePath = __dirname + '/templates/relatorioSesmtCnpj.html';
+            //console.log(templatePath);
+            //process.cwd()+"/templates/relatorioSesmtCnpj.html";                
+        }
+        else{
+            const cnae = req.body.cod_cnae.replace(/\D/g, '');
+            fileName = 'previsio_nr04_'+cnae+'_'+req.body.dateTimeReport+'.html';
+            templatePath = __dirname + "/templates/relatorioSesmtCnae.html";
+        }
+        emailBodyPath = __dirname + '/templates/emailTemplate.html';
+    }else if(req.body.tipo_consulta=='nr05'){
+        
+        if(req.body.cnpj){
+            const cnpj = req.body.cnpj.replace(/\D/g, '');
+            fileName = 'previsio_nr05_'+cnpj+'_'+req.body.dateTimeReport+'.html';
+            templatePath = __dirname + "/templates/relatorioCipaCnpj.html";
+        }
+        else{
+            const cnae = req.body.cod_cnae.replace(/\D/g, '');
+            fileName = 'previsio_nr05_'+cnae+'_'+req.body.dateTimeReport+'.html';
+            templatePath = __dirname + "/templates/relatorioCipaCnae.html";
+        }
+        emailBodyPath = __dirname + '/templates/emailTemplate.html';
+    }else{
+        console.log("não é possivel gerar o relatório");
+        return
+    }
+    //const reportPath = './reports/'+filename;
+    //chama função para gerar PDF
+
+    /*
+    let p = await pdf.generatePdf(req.body, templatePath, fileName, userEmail, emailBodyPath);
+    
+
+
+    p = 'abc.pdf';
+
+        
+        
+    }
+    else   {
+        res.status(404).json('Erro');
+        console.log('FALHA AO DELETAR');
+    }
+
+    //res.status(200).end();
+    //res.attachment(__dirname+'/templates/emailTemplate.html').end();
+
+
+    */
+
+    res.download(__dirname+'/abc.pdf', 'relatorio-Top-Secret.pdf', function(err){
+        if(err){
+            console.log(err)
+        }else{
+            console.log('Deu');
+        }
+    });
+
+});
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {

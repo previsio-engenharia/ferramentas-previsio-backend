@@ -7,6 +7,8 @@ const utils = require('util');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+//var conversion = require("phantom-html-to-pdf")();
+
 var buffer = require('buffer/').Buffer;
 
 const readFile = utils.promisify(fs.readFile);
@@ -109,79 +111,73 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
             // console.log(res)
     
             //
-            const rPath = __dirname + '/reports/'+filename;
+            const rPath = '/tmp/'+filename;
             console.log("Compiling the template with handlebars");
             const template = hb.compile(res, {strict: true});
             // we have compile our code with handlebars
             const result = template(data);
             //console.log(result);
             //sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
-            /*
-            await fs.writeFile(rPath, result, (err) => {
-                if(err) {
-                    console.error(err);
-                } else {
-                    console.log("File saved successfully!");
-                    sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
-
-                    //console.log("PDF Generated");
-                }
-            });   
-            */
-            let body = fs.readFileSync(emailBodyPath, 'utf8');
-
-            console.log('Montando Email MSG');
             
+            console.log('Escrever arquivo html');
+            //fs.writeFileSync(rPath, result);
+            fs.writeFileSync(rPath, result, (err) => {
+                if(err) {
+                    console.log(err);
+                }
+            });
+            
+           
+            console.log('Ler arquivo html do body...');
+            let body = fs.readFileSync(emailBodyPath, 'utf8');
+            console.log('Ler arquivo html do anexo...');
+            let attac = fs.readFileSync(rPath, 'base64');
+
+            //console.log(body);
+            console.log('Montando msg do email...')
 
             const msg = {
                 to: emailAddr,
                 from: process.env.MAIL_USER, // Use the email address or domain you verified above
                 replyTo: 'ped@previsio.com.br',
                 subject: 'Previsio - Relatório de Consulta NR',
-                //text: 'Teste com SendGrid email',
+                text: 'Teste com SendGrid email',
                 html: body,
                 attachments: [
                     {
                         filename: filename,
-                        content: buffer.from(result).toString('base64'),
+                        content: attac,
                         type: 'text/html',
                         disposition: 'attachment'
                         //path: rPath
                     }
-                ]
-                
+                ]             
               };
 
-              console.log('Tentativa enviar email');
-
-              sendMail(msg);
-
-
-            
-
-
-                   
-
-            //sendEmail(emailAddr, rPath, filename, emailBodyPath);
+              console.log('Enviar email..');
+              await sendMail(msg, rPath);
+              return;
 
         }).catch(err => {
-            console.error(err)
+            console.error(err);
+            return;
         });
         
-    };
-
-
-    
+    };    
 }
 
-const sendMail = async (msg) => {
+const sendMail = async (msg, rPath) => {
     try{
-        await sgMail.send(msg);
-        console.log('Email enviado com sucesso!');
+        await sgMail.send(msg).then(() => {
+            console.log('Email enviado com sucesso!');
+            fs.unlink(rPath, ()=>{console.log('Arquivo deletado')});
+            //res.status(200).json('Email enviado com sucesso!');
+        })    
     } catch(error){
         console.log(error);
         if(error.response){
             console.log(error.response.body);
+            //res.status(400).json('Falha ao enviar!');
         }
     }
 }
