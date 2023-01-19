@@ -154,66 +154,32 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 ]             
               };
 
-              //await sendMail(msg);
               console.log('Enviar email..');
-              try{
-                  sgMail.send(msg).then(() => {
-                      console.log('Email enviado com sucesso!');
-                      fs.unlink(rPath, ()=>{console.log('Arquivo deletado')});
-                      //res.status(200).json('Email enviado com sucesso!');
-                  })    
-              } catch(error){
-                  console.log(error);
-                  if(error.response){
-                      console.log(error.response.body);
-                      //res.status(400).json('Falha ao enviar!');
-                  }
-              } 
-              
-            //sendEmail(emailAddr, rPath, filename, emailBodyPath);
-            /*
-
-            await conversion({ html: result }, async function(err, pdf) {
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    console.log('gerando pdf....')
-                    var output = await fs.createWriteStream(rPath)
-                    //console.log(pdf.logs);
-                    //console.log(pdf.numberOfPages);
-                    // since pdf.stream is a node.js stream you can use it
-                    // to save the pdf to a file (like in this example) or to
-                    // respond an http request.
-                    await pdf.stream.pipe(output);
-                }
-            });
-            */
-            //console.log(rPath);
-            //return rPath;
+              await sendMail(msg, rPath);
+              return;
 
         }).catch(err => {
             console.error(err);
-            //return;
+            return;
         });
         
-    };
-
-
-    
+    };    
 }
 
-const sendMail = async (msg) => {
-    console.log('Tentativa de enviar o email...');
-    sgMail.send(msg)
-        .then(() => {
+const sendMail = async (msg, rPath) => {
+    try{
+        await sgMail.send(msg).then(() => {
             console.log('Email enviado com sucesso!');
-        }, error => {
-            console.error(error);
-            if (error.response) {
-                console.error(error.response.body)
-            }
-        })
+            fs.unlink(rPath, ()=>{console.log('Arquivo deletado')});
+            //res.status(200).json('Email enviado com sucesso!');
+        })    
+    } catch(error){
+        console.log(error);
+        if(error.response){
+            console.log(error.response.body);
+            //res.status(400).json('Falha ao enviar!');
+        }
+    }
 }
 
 module.exports = {
