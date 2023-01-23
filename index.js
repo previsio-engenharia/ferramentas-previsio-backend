@@ -478,6 +478,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             return
         }
 
+        /*
         if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
             const registro = await Registro_Consultas.create({
                 tipo: consulta,
@@ -490,6 +491,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             });
             //console.log(registro); 
         }
+        */
 
         //chama função para gerar PDF
         await pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath);
