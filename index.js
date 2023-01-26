@@ -25,8 +25,8 @@ app.use(express.static('public/images'));
 //app.options('*', cors());
 
 app.use((req, res, next) => {
-    //res.header("Access-Control-Allow-Origin", "https://ferramentas.previsio.com.br");
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "https://ferramentas.previsio.com.br");
+    //res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST");
     res.header("Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type, Authorization");
     app.use(cors());
@@ -41,23 +41,7 @@ app.use((req, res, next) => {
 *
 *
 */
-app.get('/cafe', async (req, res) => {
-    //res.status(418).json('The server refuses the attempt to brew coffee with a teapot.');
-    //res.attachment(__dirname+'/templates/emailTemplate.html').send();
-    res.download(__dirname+'/abc.pdf', 'relatorio-Top-Secret.pdf', function(err){
-        if(err){
-            console.log(err)
-        }else{
-            console.log('Deu');
-        }
-    });
-    //res.json('OK,The server refuses the attempt to brew coffee with a teapot.');
-    
-    //res.status(418).end();
-    //return res;
-});
-
-
+app.get('/cafe', (req, res) => { res.status(418).json('The server refuses the attempt to brew coffee with a teapot.'); });
 
 //consulta DB NR04-SESMT
 app.post('/nr04-05-consulta', async (req,res) =>{
@@ -478,21 +462,6 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             return
         }
 
-        /*
-        if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
-            const registro = await Registro_Consultas.create({
-                tipo: consulta,
-                status: status_consulta,
-                cnpj: cnpjInserido,
-                cnae1: codigoCnae1Inserido,
-                cnae2: codigoCnae2Inserido,
-                nro_trabalhadores: numero_trabalhadores_inserido,
-                email: userEmail
-            });
-            //console.log(registro); 
-        }
-        */
-
         //chama função para gerar PDF
         await pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath);
         
@@ -512,113 +481,65 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             //console.log('CONSULTA: .......................')
             //console.log(registro); 
         }
-    }
-
-    /*
-    if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
-        const registro = await Registro_Consultas.create({
-            tipo: consulta,
-            status: status_consulta,
-            cnpj: cnpjInserido,
-            cnae1: codigoCnae1Inserido,
-            cnae2: codigoCnae2Inserido,
-            nro_trabalhadores: numero_trabalhadores_inserido,
-            email: userEmail
-        });
-        //console.log('CONSULTA: .......................')
-        respostaConsultaTabelas.id_registro = registro.dataValues.id; 
-    }
-    */
-
-    /*
-    * SALVAR REGISTRO DA CONSULTA NO DB
-    */
-
-    
-
+    }  
 
     //retorno para front
     return res.status(respostaConsultaTabelas.status).json({respostaConsultaTabelas});
 })
 
-
-//rota para gerar relatorio em pdf.
-app.post('/nr04-05-relatorio-pdf', async (req,res) =>{
-
-    /*
-    console.log(JSON.stringify(req.body));
-    let fileName;
-    let emailBodyPath = '';
-    let userEmail = 'joel@previsio.com.br';
-
-    //var reportPath; // = './reports/report.pdf';
+app.post('/registros', async (req, res) =>{
     
-    //respostaConsultaTabelas.dateTimeReport = dateTimeReport;
-    //console.log(process.cwd());
-    if(req.body.tipo_consulta =='nr04'){            
-        if(req.body.cnpj){
-            const cnpj = req.body.cnpj.replace(/\D/g, '');
-            fileName = 'previsio_nr04_'+cnpj+'.pdf';
-            templatePath = __dirname + '/templates/relatorioSesmtCnpj.html';
-            //console.log(templatePath);
-            //process.cwd()+"/templates/relatorioSesmtCnpj.html";                
+    if(req.body.login == process.env.REGISTROS_LOGIN){
+        if(req.body.senha == process.env.REGISTROS_SENHA){
+            //login ok
+            let converter = require('json-2-csv');
+            /*REQ
+            login
+            senha
+            RES
+            return csv -> all db
+            */
+
+            let tabela_registros = await Registro_Consultas.findAll().then((tabela_registros)=>{
+                converter.json2csv(tabela_registros, function (err, csv){
+                    if(err){
+                        console.log(`Erro: ${err}`);
+                    }
+                    else{
+                        //console.log(csv);
+                        res.setHeader('Content-Type', 'text/csv');
+                        res.setHeader('Content-disposition', 'attachment; filename="consultasNR04eNR05.csv"');
+                        //res.attachment('consultasNR04eNR05.csv');
+
+                        //res.setHeader('Content-Type', 'text/csv');
+                        return res.status(200).send(csv);                
+                    }
+                }, {
+                    keys : [ { field: 'dataValues.id', title: 'Id' }, 
+                            { field: 'dataValues.tipo', title: 'Tipo'},
+                            { field: 'dataValues.status', title: 'Status'},
+                            { field: 'dataValues.cnpj', title: 'CNPJ'},
+                            { field: 'dataValues.cnae1', title: 'CNAE1'},
+                            { field: 'dataValues.cnae2', title: 'CNAE2'},
+                            { field: 'dataValues.nro_trabalhadores', title: 'Nº Trabalhadores'},
+                            { field: 'dataValues.email', title: 'E-mail'},
+                            { field: 'dataValues.createdAt', title: 'Data e hora'}
+                        ]
+                })
+            }).catch ((err)=>{
+                console.log(`Erro: ${err}`); 
+                res.status(400).end(`Erro: ${err}`);
+            })
         }
         else{
-            const cnae = req.body.cod_cnae.replace(/\D/g, '');
-            fileName = 'previsio_nr04_'+cnae+'_'+req.body.dateTimeReport+'.html';
-            templatePath = __dirname + "/templates/relatorioSesmtCnae.html";
+            res.status(401).end(`Erro: senha inválida`);
         }
-        emailBodyPath = __dirname + '/templates/emailTemplate.html';
-    }else if(req.body.tipo_consulta=='nr05'){
-        
-        if(req.body.cnpj){
-            const cnpj = req.body.cnpj.replace(/\D/g, '');
-            fileName = 'previsio_nr05_'+cnpj+'_'+req.body.dateTimeReport+'.html';
-            templatePath = __dirname + "/templates/relatorioCipaCnpj.html";
-        }
-        else{
-            const cnae = req.body.cod_cnae.replace(/\D/g, '');
-            fileName = 'previsio_nr05_'+cnae+'_'+req.body.dateTimeReport+'.html';
-            templatePath = __dirname + "/templates/relatorioCipaCnae.html";
-        }
-        emailBodyPath = __dirname + '/templates/emailTemplate.html';
-    }else{
-        console.log("não é possivel gerar o relatório");
-        return
-    }
-    //const reportPath = './reports/'+filename;
-    //chama função para gerar PDF
 
-    /*
-    let p = await pdf.generatePdf(req.body, templatePath, fileName, userEmail, emailBodyPath);
-    
-
-
-    p = 'abc.pdf';
-
-        
-        
-    }
-    else   {
-        res.status(404).json('Erro');
-        console.log('FALHA AO DELETAR');
+    } else{
+        res.status(401).end(`Erro: usuário inválido`);
     }
 
-    //res.status(200).end();
-    //res.attachment(__dirname+'/templates/emailTemplate.html').end();
-
-
-    */
-
-    res.download(__dirname+'/abc.pdf', 'relatorio-Top-Secret.pdf', function(err){
-        if(err){
-            console.log(err)
-        }else{
-            console.log('Deu');
-        }
-    });
-
-});
+})
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {

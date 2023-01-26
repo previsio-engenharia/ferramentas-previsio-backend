@@ -3,11 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('util');
 
-//let nodemailer = require("nodemailer");
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-//var conversion = require("phantom-html-to-pdf")();
 
 var buffer = require('buffer/').Buffer;
 
@@ -24,82 +21,6 @@ async function getTemplateHtml(tPath) {
         return Promise.reject("Could not load html template");
     }
 }
-
-
-/*
-//enviar email
-async function sendEmail(emailAddr, rPath, filename, emailBodyPath, result){
-    let transporter = nodemailer.createTransport({
-        name: process.env.MAIL_NAME,
-        host: process.env.MAIL_HOST,
-        port: process.env.MAIL_PORT,
-        secure: true, // upgrade later with STARTTLS
-        auth: {
-          user: process.env.MAIL_USER,
-          pass: process.env.MAIL_PW,
-        },
-        tls: {
-            rejectUnauthorized: true
-        }
-      });
-
-      //console.log('Verificando servidor de emails...');
-        console.log(`Tentativa de email...  ${process.env.MAIL_USER}`);
-
-    // verify connection configuration
-        //transporter.verify(function (error, success) {
-        //    if (error) {
-        //    console.log(error);
-        //} else {
-            //console.log("Server is ready to take our messages");
-
-            //carrega o corpo do email do arquivo html
-            let body = fs.readFileSync(emailBodyPath);
-
-            const mail ={
-                from: process.env.MAIL_USER,
-                to: emailAddr,
-                subject: 'Previsio - Relatório de Consulta NR',
-                //text: 'Verifique em anexo o resultado de sua consulta',
-                //html: "<h1>Relatório de Consulta NR04</h1><p>Obrigado por utilizar nossa ferramenta. Verifique em anexo o relatório de sua consulta.</p><p>Acesse <a target='_blank' href='https://previsio.com.br'>nosso site</a>!</p>",
-                
-                html: body,
-                attachments: [
-                    {
-                        filename: filename,
-                        content: result
-                        //path: rPath
-                    }
-                ]
-                
-            };
-
-            transporter.sendMail(mail, function (error, info) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log('Email sent successfully: '
-                            + info.response);
-                            /*
-                    console.log('Deletar arquivo PDF...');
-                    fs.unlink(rPath, deleteFileCallback); 
-                    
-                    function deleteFileCallback(error){
-                        if(error){
-                            console.log("ERRO AO DELETAR ARQUIVO!");
-                            console.log(error.message);
-                        }else{
-                            console.log("PDF Deletado com sucesso!!")
-                        }
-                    }
-                    //
-                    
-                }
-            });
-       // }
-    //});
-}
-*/
 
 async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
 
@@ -171,13 +92,11 @@ const sendMail = async (msg, rPath) => {
         await sgMail.send(msg).then(() => {
             console.log('Email enviado com sucesso!');
             fs.unlink(rPath, ()=>{console.log('Arquivo deletado')});
-            //res.status(200).json('Email enviado com sucesso!');
         })    
     } catch(error){
         console.log(error);
         if(error.response){
             console.log(error.response.body);
-            //res.status(400).json('Falha ao enviar!');
         }
     }
 }
