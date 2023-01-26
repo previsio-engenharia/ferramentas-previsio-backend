@@ -488,17 +488,17 @@ app.post('/nr04-05-consulta', async (req,res) =>{
 })
 
 app.post('/registros', async (req, res) =>{
-    
+    /*  REQ
+        login
+        senha
+        RES
+        return csv -> all db
+    */
     if(req.body.login == process.env.REGISTROS_LOGIN){
         if(req.body.senha == process.env.REGISTROS_SENHA){
             //login ok
             let converter = require('json-2-csv');
-            /*REQ
-            login
-            senha
-            RES
-            return csv -> all db
-            */
+            
 
             let tabela_registros = await Registro_Consultas.findAll().then((tabela_registros)=>{
                 converter.json2csv(tabela_registros, function (err, csv){
@@ -512,7 +512,7 @@ app.post('/registros', async (req, res) =>{
                         //res.attachment('consultasNR04eNR05.csv');
 
                         //res.setHeader('Content-Type', 'text/csv');
-                        return res.status(200).send(csv);                
+                        return res.status(200).send(csv);
                     }
                 }, {
                     keys : [ { field: 'dataValues.id', title: 'Id' }, 
