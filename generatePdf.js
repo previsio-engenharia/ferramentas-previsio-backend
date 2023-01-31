@@ -22,7 +22,7 @@ async function getTemplateHtml(tPath) {
     }
 }
 
-async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
+async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath, emailSubject) {
 
     if(emailAddr){
         
@@ -61,8 +61,8 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath) {
                 to: emailAddr,
                 from: process.env.MAIL_USER, // Use the email address or domain you verified above
                 replyTo: 'ped@previsio.com.br',
-                subject: 'Previsio - Relatório de Consulta NR',
-                text: 'Teste com SendGrid email',
+                subject: emailSubject,
+                //subject: 'Previsio - Relatório de Consulta NR',
                 html: body,
                 attachments: [
                     {

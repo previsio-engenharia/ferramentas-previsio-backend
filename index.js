@@ -25,8 +25,8 @@ app.use(express.static('public/images'));
 //app.options('*', cors());
 
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://ferramentas.previsio.com.br");
-    //res.header("Access-Control-Allow-Origin", "*");
+    //res.header("Access-Control-Allow-Origin", "https://ferramentas.previsio.com.br");
+    res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST");
     res.header("Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type, Authorization");
     app.use(cors());
@@ -426,7 +426,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         }
     }
 
-    if(!respostaConsultaTabelas.erro  && consulta != 'gr'){
+    if(!respostaConsultaTabelas.erro && userEmail){
         //console.log(consulta);
         let now = new Date();
         now = date.addHours(now, -3); //timezone america-sao Paulo
@@ -443,6 +443,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
 
 
         let emailBodyPath = '';
+        let emailSubject = '';
 
         //var reportPath; // = './reports/report.pdf';
         
@@ -461,7 +462,8 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 fileName = 'previsio_nr04_'+cnae+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + "/templates/relatorioSesmtCnae.html";
             }
-            emailBodyPath = __dirname + '/templates/emailTemplate.html';
+            emailSubject = "Relatório NR04";
+            emailBodyPath = __dirname + '/templates/emailTemplateNR04.html';
         }else if(consulta=='nr05'){
             
             if(cnpjInserido){
@@ -474,14 +476,29 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 fileName = 'previsio_nr05_'+cnae+'_'+dateTimeFilename+'.html';
                 templatePath = __dirname + "/templates/relatorioCipaCnae.html";
             }
-            emailBodyPath = __dirname + '/templates/emailTemplate.html';
+            emailSubject = "Relatório NR05";
+            emailBodyPath = __dirname + '/templates/emailTemplateNR05.html';
+        }else if(consulta=='gr'){
+            
+            if(cnpjInserido){
+                const cnpj = cnpjInserido.replace(/\D/g, '');
+                fileName = 'previsio_gr_'+cnpj+'_'+dateTimeFilename+'.html';
+                templatePath = __dirname + "/templates/relatorioGrCnpj.html";
+            }
+            else{
+                const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
+                fileName = 'previsio_gr_'+cnae+'_'+dateTimeFilename+'.html';
+                templatePath = __dirname + "/templates/relatorioGrCnae.html";
+            }
+            emailSubject = "Relatório Grau de Risco";
+            emailBodyPath = __dirname + '/templates/emailTemplateGR.html';
         }else{
             console.log("não é possivel gerar o relatório");
             return
         }
 
         //chama função para gerar PDF
-        await pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath);
+        await pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath, emailSubject);
         
         /*
         if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
