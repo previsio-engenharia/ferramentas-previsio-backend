@@ -75,21 +75,26 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         graudeRisco: []
     };
 
+
     if(cnpjInserido){
         //consulta informações no CNPJ inserido na API minhareceita.org       
         try{
+            console.log("Verifica se minhareceita está online")
             const serviceOnline = await got(process.env.URL_API_MINHARECEITA + 'updated', { json: true });
             if(serviceOnline.statusCode != 200)
             {
+                console.log("Erro")
                 status_consulta = 51; //não foi possivel acessar a  API para consulta CNPJ
                 respostaConsultaTabelas.status = 400;
                 respostaConsultaTabelas.erro = true;
                 respostaConsultaTabelas.mensagem = 'Erro: não foi possível acessar a consulta do CNPJ. Considere realizar a consulta com o código CNAE, ou tente novamente mais tarde.';
             }
             else{
+                console.log("Ok")
                 consultaCNPJ.dataUpdate = serviceOnline.body.message;
             }
         }catch(error){
+            console.log("Não foi possivel acessar a  API")
             status_consulta = 51; //não foi possivel acessar a  API para consulta CNPJ
             respostaConsultaTabelas.status = 400;
             respostaConsultaTabelas.erro = true;
@@ -99,6 +104,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         if(!respostaConsultaTabelas.erro){
             try {
                 //GET request na API
+                console.log("Consulta o CNPJ")
                 const response = await got(process.env.URL_API_MINHARECEITA + cnpjInserido, { json: true });
                 const c = JSON.stringify(response.body.cnae_fiscal);
                 //formata o CNAE principal para o formato ab.cd-e, conforme inserido na tabela do grau de risco na NR04
@@ -125,7 +131,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
                 //console.log(respostaConsultaTabelas.codigosCnae[0]);
                 //respostaConsultaTabelas.codigosCnae[0] = response.body.cnae_fiscal;
             } catch (error) {
-                //console.log(error);
+                console.log(`Não conseguiu consultar CNPJ: ${error}`);
                 status_consulta = 52; // CNPJ consultado na API mas não encontrado
                 respostaConsultaTabelas.status = 400;
                 respostaConsultaTabelas.erro = true;
@@ -136,11 +142,13 @@ app.post('/nr04-05-consulta', async (req,res) =>{
 
     if(!respostaConsultaTabelas.erro){
         if(consultaCNPJ.codigosCnae.length > 0){
+            console.log("Atribui CNAE da consulta cnpj")
             for (var i=0; i < consultaCNPJ.codigosCnae.length; i++) {
                 codigosCnaesConsultar[i] = consultaCNPJ.codigosCnae[i];
                 //console.log(codigosCnaesConsultar[i]);
             }
         }else if(codigoCnae1Inserido){
+            console.log("Atribui CNAE 1 do formulário")
             codigosCnaesConsultar[0] = codigoCnae1Inserido;
             if(codigoCnae2Inserido){
                 codigosCnaesConsultar[1] = codigoCnae2Inserido;
@@ -148,6 +156,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             //console.log(codigosCnaesConsultar[0]);
         }else{
             if(codigoCnae2Inserido){
+                console.log("Atribui CNAE 2 do formulário")
                 codigosCnaesConsultar[0] = codigoCnae2Inserido;
             }else{
                 status_consulta = 53; // Código CNAE não identificado
@@ -163,18 +172,19 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         //verifica conexão com o DB
         sequelize.authenticate()
         .then(() => {
-            //console.log("Conexão com banco de dados realizada com sucesso!");
+            console.log("Conexão com banco de dados ativa!");
         }).catch(() => {
             status_consulta = 50; // Não foi possível conectar ao banco de dados
             respostaConsultaTabelas.status = 400;
             respostaConsultaTabelas.erro = true;
             respostaConsultaTabelas.mensagem = 'Erro: não foi possível connectar ao banco de dados';
-            //console.log("Erro: conexão com banco de dados não realizada com sucesso!");
+            console.log("Erro: conexão com banco de dados não realizada com sucesso!");
         })
     }
 
     if(!respostaConsultaTabelas.erro)
     {
+        console.log("Procura o CNAE na tabela NR04")
         //consulta tabela CNAEs
         const cnae_table = await NR04_Cnae_Gr.findAll({
             //consulta linha para encontrar o CNAE inserido
@@ -191,6 +201,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             attributes: ['id', 'codigo_cnae', 'denominacao', 'grau_risco']
         })
         .then((cnae_table) => {
+            console.log("Consulta ok, extrai respostas")
             for(var i=0;i<cnae_table.length;i++){
                 respostaConsultaTabelas.codigoCnae[i] = cnae_table[i].codigo_cnae;
                 respostaConsultaTabelas.descricaoCnae[i] = cnae_table[i].denominacao;
@@ -199,7 +210,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             }
             if(cnae_table.length > 1){
                //verifica qual é o maior grau de risco
-               respostaConsultaTabelas.maiorGrauRisco = Math.max(...respostaConsultaTabelas.graudeRisco);
+                respostaConsultaTabelas.maiorGrauRisco = Math.max(...respostaConsultaTabelas.graudeRisco);
             }
             else{
                 respostaConsultaTabelas.maiorGrauRisco = parseInt(cnae_table[0].grau_risco);
@@ -207,6 +218,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             //Se inserido o CNPJ, verifica a opção por dispensar o PGR
             /*
             */
+            console.log("Verifica Dispensa PGR")
             if(respostaConsultaTabelas.mei){
                 respostaConsultaTabelas.dispensaPGR = true;
             }
@@ -220,6 +232,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             }
         })
         .catch(()=>{
+            console.log("Erro na consulta da tabela nr04")
             //se ocorreu algum erro, preenche informações para retornar ao front
             status_consulta = 54; // CNAE informado não encontrado no DB
             respostaConsultaTabelas.status = 400;
@@ -227,8 +240,13 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             respostaConsultaTabelas.mensagem = 'Erro: Nenhum valor encontrado com o CNAE informado.'
         })
     }
+
+    /*
+    *  Se for uma consulta de GR, interrompe as consultas aqui
+    */
+
     //consultar somente se nro trabalhadores >= 50
-    if(!respostaConsultaTabelas.erro){
+    if(!respostaConsultaTabelas.erro && consulta != 'gr'){
             //se o nro trabalhadores > 5000, realizar duas consultas, para 5000 e mais. Fazer o calculo
         if(respostaConsultaTabelas.nroTrabalhadores > 5000){
             
@@ -341,7 +359,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         }
     }
     
-    if(!respostaConsultaTabelas.erro)
+    if(!respostaConsultaTabelas.erro  && consulta != 'gr')
     {
         if(respostaConsultaTabelas.nroTrabalhadores > 10000){
             //calcula fator de multiplicação para grupos acima de 5000
@@ -408,7 +426,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         }
     }
 
-    if(!respostaConsultaTabelas.erro){
+    if(!respostaConsultaTabelas.erro  && consulta != 'gr'){
         //console.log(consulta);
         let now = new Date();
         now = date.addHours(now, -3); //timezone america-sao Paulo
@@ -465,6 +483,7 @@ app.post('/nr04-05-consulta', async (req,res) =>{
         //chama função para gerar PDF
         await pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath);
         
+        /*
         if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
             const registro = await Registro_Consultas.create({
                 tipo: consulta,
@@ -481,9 +500,49 @@ app.post('/nr04-05-consulta', async (req,res) =>{
             //console.log('CONSULTA: .......................')
             //console.log(registro); 
         }
+        */
     }  
 
+    console.log("Salvar registro de Consulta")
+    try{
+        const registro = await Registro_Consultas.create({
+            tipo: consulta,
+            status: status_consulta,
+            cnpj: cnpjInserido,
+            cnae1: codigoCnae1Inserido,
+            cnae2: codigoCnae2Inserido,
+            nro_trabalhadores: numero_trabalhadores_inserido,
+            email: userEmail
+        });
+        if(registro){
+            console.log('Registro inserido');
+        }
+        //console.log('CONSULTA: .......................')
+        //console.log(registro); 
+    } catch(err) {
+        console.log(`Erro ao salvar registro: ${err}`);
+    }
+    /*
+    if(userEmail.search(/joel@previsio/i)<0){ //não salva consultas com email joel@previsio
+        const registro = await Registro_Consultas.create({
+            tipo: consulta,
+            status: status_consulta,
+            cnpj: cnpjInserido,
+            cnae1: codigoCnae1Inserido,
+            cnae2: codigoCnae2Inserido,
+            nro_trabalhadores: numero_trabalhadores_inserido,
+            email: userEmail
+        });
+        if(registro){
+            console.log('Registro inserido');
+        }
+        //console.log('CONSULTA: .......................')
+        //console.log(registro); 
+    }
+    */
+
     //retorno para front
+    console.log("Finalizando... Retornando dados");
     return res.status(respostaConsultaTabelas.status).json({respostaConsultaTabelas});
 })
 

@@ -131,12 +131,16 @@
                             <h3>CARACTERÍSTICAS DA EMPRESA</h3>
                         </td>
                     </tr>
+
                     <tr>
                         <th class="tableHeader">
                             CNAE Consultado
                         </th>
+
                         <td class="tableInfo">
-                            {{codigoCnae}}
+                            {{#each codigoCnae}}
+                            {{this}}</br>
+                            {{/each}}
                         </td>
                     </tr>
                     <tr>
@@ -144,7 +148,9 @@
                             Denominação
                         </th>
                         <td class="tableInfo">
-                            {{descricaoCnae}}
+                            {{#each descricaoCnae}}
+                            {{this}}</br>
+                            {{/each}}
                         </td>
                     </tr>
                     <tr>
@@ -152,9 +158,13 @@
                             Grau de Risco Associado
                         </th>
                         <td class="tableInfo">
-                            {{maiorGrauRisco}}
+                            {{#each graudeRisco}}
+                            {{this}}</br>
+                            {{/each}}
                         </td>
                     </tr>
+
+
                     <tr>
                         <th class="tableHeader">
                             Quantidade de Trabalhadores
