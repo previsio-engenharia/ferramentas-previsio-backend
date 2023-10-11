@@ -14,11 +14,11 @@ const date = require('date-and-time');
 
 //const Home = require('./models/Home');
 //const MsgContact = require('./models/MsgContact');
-const NR04_Sesmt = require('./models/NR04_Sesmt');
-const NR04_Cnae_Gr = require('./models/NR04_Cnae_Gr');
-const NR05_Cipa = require('./models/NR05_Cipa');
+//const NR04_Sesmt = require('./models/NR04_Sesmt');
+//const NR04_Cnae_Gr = require('./models/NR04_Cnae_Gr');
+//const NR05_Cipa = require('./models/NR05_Cipa');
 const Registro_Consultas = require('./models/Registro_Consulta');
-const { Sequelize, Op, DataTypes, json } = require('sequelize');
+//const { Sequelize, Op, DataTypes, json } = require('sequelize');
 const sequelize = require('./models/db');
 
 const pdf = require('./generatePdf');
@@ -212,14 +212,14 @@ app.post('/nr04-05-consulta', async (req, res) => {
             const tableItem = relacao_cnae_gr.find(item => item.codigo_cnae == element)
             if (tableItem) {
                 cnae_table.push(tableItem)
-                console.log("CNAE encontrado:", tableItem)
+                //console.log("CNAE encontrado:", tableItem)
             }
             else {
-                console.log("CNAE não encontrado")
+                //console.log("CNAE não encontrado")
             }
         });
 
-        console.log("TABLE:", cnae_table)
+        //console.log("TABLE:", cnae_table)
 
         if (cnae_table.length > 0) {
             console.log("Consulta ok, extrai respostas")
@@ -349,15 +349,15 @@ app.post('/nr04-05-consulta', async (req, res) => {
 
             if (sesmt_table) {
                 //sesmt_table.push(tableItem)
-                console.log("Sesmt encontrado:", sesmt_table)
+                //console.log("Sesmt encontrado:", sesmt_table)
                 //console.log("[0]", sesmt_table[0])
                 //console.log("[1]", sesmt_table[1])
             }
             else {
-                console.log("Sesmt não encontrado:")
+                //console.log("Sesmt não encontrado:")
             }
 
-            console.log("SESMT TABLE:", sesmt_table)
+            //console.log("SESMT TABLE:", sesmt_table)
 
 
 
@@ -511,13 +511,13 @@ app.post('/nr04-05-consulta', async (req, res) => {
 
             if (sesmt_table) {
                 //sesmt_table.push(tableItem)
-                console.log("Sesmt encontrado:", sesmt_table)
+                //console.log("Sesmt encontrado:", sesmt_table)
             }
             else {
-                console.log("Sesmt não encontrado:")
+                //console.log("Sesmt não encontrado:")
             }
 
-            console.log("SESMT TABLE:", sesmt_table)
+            //console.log("SESMT TABLE:", sesmt_table)
 
             if (sesmt_table) {
                 //se deu tudo certo, atribui os valores consultados a variável de resposta
@@ -688,7 +688,7 @@ app.post('/nr04-05-consulta', async (req, res) => {
             )
 
             if(cipa_table){
-                console.log("CIPA TABLE < 10000:", cipa_table)
+                //console.log("CIPA TABLE < 10000:", cipa_table)
                 //se deu tudo certo, atribui os valores consultados a variável de resposta
                 respostaConsultaTabelas.nroTrabalhadoresMinCipa = cipa_table[0].nro_trabalhadores_min;
                 respostaConsultaTabelas.nroTrabalhadoresMaxCipa = cipa_table[0].nro_trabalhadores_max;
@@ -872,7 +872,7 @@ app.post('/nr04-05-consulta', async (req, res) => {
 
     //retorno para front
     console.log("Finalizando... Retornando dados");
-    console.log("RESPOSTA", respostaConsultaTabelas)
+    //console.log("RESPOSTA", respostaConsultaTabelas)
     return res.status(respostaConsultaTabelas.status).json({ respostaConsultaTabelas });
 })
 

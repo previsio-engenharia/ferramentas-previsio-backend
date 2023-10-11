@@ -1,3 +1,5 @@
+/* modelo não mais utilizado. Agora esta tabela está em um arquivo estático
+nesta aplicação */
 const Sequelize = require('sequelize');
 const db = require('./db');
 
