@@ -48,7 +48,7 @@ async function generateReport(req, res) {
             console.log('Escrever arquivo html');
             //cria arquivo com relatorio preenchido
             const rootDir = path.resolve(__dirname, '../..')
-            const reportPath = `${rootDir}/tmp/${paths.fileName}`;
+            const reportPath = `${__dirname}/tmp/${paths.fileName}`;
             fs.writeFileSync(reportPath, result, (err) => {
                 if (err) {
                     console.log(err);
