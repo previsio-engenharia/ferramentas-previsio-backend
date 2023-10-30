@@ -138,8 +138,8 @@
                         </th>
 
                         <td class="tableInfo">
-                            {{#each dadosResponse.dadosCnaes}}
-                            {{this.codigo}}</br>
+                            {{#each codigoCnae}}
+                            {{this}}</br>
                             {{/each}}
                         </td>
                     </tr>
@@ -148,8 +148,8 @@
                             Denominação
                         </th>
                         <td class="tableInfo">
-                            {{#each dadosResponse.dadosCnaes}}
-                            {{this.denominacao}}</br>
+                            {{#each descricaoCnae}}
+                            {{this}}</br>
                             {{/each}}
                         </td>
                     </tr>
@@ -158,8 +158,8 @@
                             Grau de Risco Associado
                         </th>
                         <td class="tableInfo">
-                            {{#each dadosResponse.dadosCnaes}}
-                            {{this.grauDeRisco}}</br>
+                            {{#each graudeRisco}}
+                            {{this}}</br>
                             {{/each}}
                         </td>
                     </tr>
@@ -170,7 +170,7 @@
         </section>
         <footer>
             <p>Gerado em <a href="https://ferramentas.previsio.com.br/consulta-grau-de-risco" target="_blank">ferramentas.previsio.com.br/consulta-grau-de-risco</a></p>
-            <p>no dia {{dateTime}}</p>
+            <p>no dia {{dateTimeReport}}</p>
         </footer>
     </body>
 </html>
