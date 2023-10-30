@@ -121,9 +121,9 @@
                     </tr>
                     <tr class="title">
                         <td colspan="2">
-                            <h2>CONSULTA GR: Grau de Risco</h2>
-                            <p>O Grau de Risco de uma empresa é definido na NR04, classificado em 4 níveis, de 1 a 4, e indica a intensidade dos riscos de caráter físico, químico, biológico, ergonômicos e acidentais que os trabalhadores podem estar expostos.</p>
-                            <p>Os dados deste documento foram consultados a partir do código CNAE e da quantidade de trabalhadores na empresa, fornecidos pelo usuário requisitante.</p>
+                            <h2>CONSULTA NR04: EQUIPE SESMT</h2>
+                            <p>Esta Norma estabelece os parâmetros e os requisitos para constituição e manutenção dos Serviços Especializados em Segurança e Medicina do Trabalho - SESMT, com a finalidade de promover a saúde e proteger a integridade do trabalhador.</p>
+                            <p>Os dados deste documento foram consultados a partir do CNPJ e da quantidade de trabalhadores na empresa, fornecidos pelo usuário requisitante. Os dados relativos ao CNPJ informado são públicos, disponibilizados pela Receita Federal, e podem estar desatualizados.</p>
                         </td>                    
                     </tr>
                     <tr class="title2">
@@ -134,13 +134,42 @@
 
                     <tr>
                         <th class="tableHeader">
-                            CNAE Consultado
+                            CNPJ
                         </th>
-
                         <td class="tableInfo">
-                            {{#each dadosResponse.dadosCnaes}}
-                            {{this.codigo}}</br>
-                            {{/each}}
+                            {{dataResponse.dadosDaEmpresa.cnpj}}                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Razão Social
+                        </th>
+                        <td class="tableInfo">
+                            {{dataResponse.dadosDaEmpresa.razao_social}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Nome Fantasia
+                        </th>
+                        <td class="tableInfo">
+                            {{dataResponse.dadosDaEmpresa.nome_fantasia}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Porte da Empresa
+                        </th>
+                        <td class="tableInfo">
+                            {{dataResponse.dadosDaEmpresa.porte}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            CNAE Principal
+                        </th>
+                        <td class="tableInfo">
+                            {{dataResponse.dadosCnaes.[0].codigo}}
                         </td>
                     </tr>
                     <tr>
@@ -148,29 +177,103 @@
                             Denominação
                         </th>
                         <td class="tableInfo">
-                            {{#each dadosResponse.dadosCnaes}}
-                            {{this.denominacao}}</br>
-                            {{/each}}
+                            {{dataResponse.dadosCnaes.[0].denominacao}}
                         </td>
                     </tr>
                     <tr>
                         <th class="tableHeader">
-                            Grau de Risco Associado
+                            Grau de Risco da Empresa
                         </th>
                         <td class="tableInfo">
-                            {{#each dadosResponse.dadosCnaes}}
-                            {{this.grauDeRisco}}</br>
-                            {{/each}}
+                            {{dataResponse.dadosDaEmpresa.maiorGrauDeRisco}}
                         </td>
                     </tr>
-                    
-                </tbody>                              
-            </table>
+                    <tr>
+                        <th class="tableHeader">
+                            Quantidade de Trabalhadores
+                        </th>
+                        <td class="tableInfo">
+                            {{dataForm.numero_trabalhadores}}
+                        </td>
+                    </tr>                
+                    <tr class="title2">
+                        <td colspan="2">
+                            <h3>EQUIPE SESMT NECESSÁRIA</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Técnicos de Segurança
+                        </th>
+                        <td class="tableInfo">
+                            {{dataResponse.consultaSesmt.tecnicoSeg}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Engenheiros de Segurança
+                        </th>
+                        <td class="tableInfo">
+                            {{dataResponse.consultaSesmt.engenheiroSeg}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Auxiliares/Técnicos de Enfermagem
+                        </th>
+                        <td class="tableInfo">
+                            {{dataResponse.consultaSesmt.auxTecEnfermagem}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Enfermeiros
+                        </th>
+                        <td class="tableInfo">
+                            {{dataResponse.consultaSesmt.enfermeiro}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Médicos
+                        </th>
+                        <td class="tableInfo">
+                            {{dataResponse.consultaSesmt.medico}}
+                        </td>
+                    </tr>
+                </tbody>
 
+                <tfooter class="tableFoot">
+                    {{#if dataResponse.dadosDaEmpresa.dispensaPGR}}
+                        <tr>
+                            <td colspan="2">
+                                <p class="obs">Com as características encontradas, a empresa consultada <strong>dispensa a elaboração de PGR</strong>. Também está dispensada da elaboração de PCMSO, desde que <strong>não</strong> sejam identificados riscos físicos, químicos, biológicos ou relacionados a fatores ergonômicos.
+                                </p>
+                                <p class="obs">Para a comprovação desta dispensa, é necessária a elaboração da <strong>Declaração de Inexistência de Riscos</strong>.</p>
+                            </td>
+                        </tr>        
+                    {{/if}}
+                    {{#if dataResponse.consultaSesmt.obsSesmt1}}
+                        <tr>
+                            <td colspan="2">
+                                <p class="obs">(*) Tempo parcial (mínimo de três horas)</p>
+                            </td>
+                        </tr>
+                    {{/if}}
+                    {{#if dataResponse.consultaSesmt.obsSesmt3}}
+                        <tr>
+                            <td colspan="2">
+                                <p class="obs">(***) O empregador pode optar pela contratação de um enfermeiro do trabalho em tempo parcial, em substituição ao auxiliar ou técnico de enfermagem do trabalho</p>
+                            </td>
+                        </tr>
+                    {{/if}}
+                </tfooter>
+                              
+            </table>
         </section>
         <footer>
-            <p>Gerado em <a href="https://ferramentas.previsio.com.br/consulta-grau-de-risco" target="_blank">ferramentas.previsio.com.br/consulta-grau-de-risco</a></p>
-            <p>no dia {{dateTime}}</p>
+            <p>Gerado em <a href="https://ferramentas.previsio.com.br/consulta-nr04" target="_blank">ferramentas.previsio.com.br/consulta-nr04</a></p>
+            <p>no dia {{dateTimeReport}}</p>
         </footer>
     </body>
 </html>

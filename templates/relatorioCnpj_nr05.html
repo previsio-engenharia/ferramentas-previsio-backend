@@ -2,7 +2,7 @@
 <html lang="pt-br">
     <head>
         <meta charset="utf-8">
-        <title>Relatório SESMT</title>
+        <title>Relatório CIPA</title>
         <style>
             body{ 
                 width: 19cm;
@@ -23,7 +23,6 @@
             }         
             .header{
                 color:#333;
-                width: 100%;
                 margin: 5px;
                 vertical-align: middle;
                 border: 1px solid black;
@@ -32,13 +31,33 @@
                 width: 35%;
                 text-align: left;                
             }
+            .tableHeader2{
+                width: 32.5%;
+                text-align: right;                
+            }
+            .tableHeaderH{
+                width: fit-content;
+                text-align: left;  
+            }
+            .tableHeaderHR{
+                width: fit-content;
+                text-align: right;  
+            }
             .header .infoPrevisio, .tableInfo{
                 width: 65%;
                 text-align: right;                
             }
+            .header .infoPrevisio, .tableInfo2{
+                width: 32.5%;
+                text-align: right;
+            }
             .header .infoPrevisio p{
                 padding: 0px;
                 margin: 0px;
+            }
+            .tableInfoH{
+                width: fit-content;
+                text-align: left;  
             }
             .header .infoPrevisio a{
                 font-weight: 600;
@@ -70,7 +89,7 @@
                 font-size: 18px;
             }
 
-            .tableHeader, .tableInfo{
+            .tableHeader, .tableInfo, .tableHeader2, .tableInfo2{
                 padding: 5px 20px;
                 font-size: 12px;
                 border-bottom: 1px solid #ccc;
@@ -110,24 +129,24 @@
             <table>
                 <tbody>
                     <tr class="header">
-                        <td class="logoPrevisio">
+                        <td class="logoPrevisio" >
                             <img src="data:image/png;base64,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" style="width:100%; max-width:200px;" alt="logo da Previsio">
                         </td>
-                        <td class="infoPrevisio">
+                        <td class="infoPrevisio" colspan="2">
                             <p><a target="_blank" href="https://previsio.com.br">Previsio Engenharia</a></p>
                             <p>Rua Júlio de Castilhos, 45, bairro Niterói</p>
                             <p>Canoas - RS</p>
                         </td>
                     </tr>
                     <tr class="title">
-                        <td colspan="2">
-                            <h2>CONSULTA NR04: EQUIPE SESMT</h2>
-                            <p>Esta Norma estabelece os parâmetros e os requisitos para constituição e manutenção dos Serviços Especializados em Segurança e Medicina do Trabalho - SESMT, com a finalidade de promover a saúde e proteger a integridade do trabalhador.</p>
+                        <td colspan="3">
+                            <h2>CONSULTA NR05: EQUIPE CIPA</h2>
+                            <p>Esta Norma estabelece os parâmetros e os requisitos da Comissão Interna de Prevenção de Acidentes – CIPA, tendo por objetivo a prevenção de acidentes e doenças relacionadas ao trabalho, de modo a tornar compatível, permanentemente, o trabalho com a preservação da vida e promoção da saúde do trabalhador.</p>
                             <p>Os dados deste documento foram consultados a partir do CNPJ e da quantidade de trabalhadores na empresa, fornecidos pelo usuário requisitante. Os dados relativos ao CNPJ informado são públicos, disponibilizados pela Receita Federal, e podem estar desatualizados.</p>
                         </td>                    
                     </tr>
                     <tr class="title2">
-                        <td colspan="2">
+                        <td colspan="3">
                             <h3>CARACTERÍSTICAS DA EMPRESA</h3>
                         </td>
                     </tr>
@@ -136,143 +155,125 @@
                         <th class="tableHeader">
                             CNPJ
                         </th>
-                        <td class="tableInfo">
-                            {{cnpj}}                            
+                        <td class="tableInfo" colspan="2">
+                            {{dataResponse.dadosDaEmpresa.cnpj}}                            
                         </td>
                     </tr>
                     <tr>
                         <th class="tableHeader">
                             Razão Social
                         </th>
-                        <td class="tableInfo">
-                            {{razaoSocial}}
+                        <td class="tableInfo" colspan="2">
+                            {{dataResponse.dadosDaEmpresa.razao_social}}
                         </td>
                     </tr>
                     <tr>
                         <th class="tableHeader">
                             Nome Fantasia
                         </th>
-                        <td class="tableInfo">
-                            {{nomeFantasia}}
+                        <td class="tableInfo" colspan="2">
+                            {{dataResponse.dadosDaEmpresa.nome_fantasia}}
                         </td>
                     </tr>
                     <tr>
                         <th class="tableHeader">
                             Porte da Empresa
                         </th>
-                        <td class="tableInfo">
-                            {{porte}}
+                        <td class="tableInfo" colspan="2">
+                            {{dataResponse.dadosDaEmpresa.porte}}
                         </td>
                     </tr>
                     <tr>
                         <th class="tableHeader">
                             CNAE Principal
                         </th>
-                        <td class="tableInfo">
-                            {{codigoCnaeFiscal}}
+                        <td class="tableInfo" colspan="2">
+                            {{dataResponse.dadosCnaes.[0].codigo}}
                         </td>
                     </tr>
                     <tr>
                         <th class="tableHeader">
                             Denominação
                         </th>
-                        <td class="tableInfo">
-                            {{descricaoCnaeFiscal}}
+                        <td class="tableInfo" colspan="2">
+                            {{dataResponse.dadosCnaes.[0].denominacao}}
                         </td>
                     </tr>
                     <tr>
                         <th class="tableHeader">
                             Grau de Risco da Empresa
                         </th>
-                        <td class="tableInfo">
-                            {{maiorGrauRisco}}
+                        <td class="tableInfo" colspan="2">
+                            {{dataResponse.dadosDaEmpresa.maiorGrauDeRisco}}
                         </td>
                     </tr>
                     <tr>
                         <th class="tableHeader">
                             Quantidade de Trabalhadores
                         </th>
-                        <td class="tableInfo">
-                            {{nroTrabalhadores}}
+                        <td class="tableInfo" colspan="2">
+                            {{dataForm.numero_trabalhadores}}
                         </td>
                     </tr>                
                     <tr class="title2">
-                        <td colspan="2">
-                            <h3>EQUIPE SESMT NECESSÁRIA</h3>
+                        <td colspan="3">
+                            <h3>EQUIPE CIPA NECESSÁRIA</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader"></th>
+                        <th class="tableHeader2">
+                            Representantes da organização
+                        </th>
+                        <th class="tableHeader2">
+                            Representantes dos empregados
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="tableHeader">
+                            Membros da equipe efetiva
+                        </th>
+                        <td class="tableInfo2">
+                            {{dataResponse.consultaCipa.cipaEfetivos}}
+                        </td>
+                        <td class="tableInfo2">
+                            {{dataResponse.consultaCipa.cipaEfetivos}}
                         </td>
                     </tr>
                     <tr>
                         <th class="tableHeader">
-                            Técnicos de Segurança
+                            Membros da equipe suplente
                         </th>
-                        <td class="tableInfo">
-                            {{tecnicoSeg}}
+                        <td class="tableInfo2">
+                            {{dataResponse.consultaCipa.cipaSuplentes}}
                         </td>
-                    </tr>
-                    <tr>
-                        <th class="tableHeader">
-                            Engenheiros de Segurança
-                        </th>
-                        <td class="tableInfo">
-                            {{engenheiroSeg}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="tableHeader">
-                            Auxiliares/Técnicos de Enfermagem
-                        </th>
-                        <td class="tableInfo">
-                            {{auxTecEnfermagem}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="tableHeader">
-                            Enfermeiros
-                        </th>
-                        <td class="tableInfo">
-                            {{enfermeiro}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="tableHeader">
-                            Médicos
-                        </th>
-                        <td class="tableInfo">
-                            {{medico}}
+                        <td class="tableInfo2">
+                            {{dataResponse.consultaCipa.cipaSuplentes}}
                         </td>
                     </tr>
                 </tbody>
 
                 <tfooter class="tableFoot">
+                    <tr>
+                        <td colspan="3">
+                            <p class="obs">Os representantes da organização na CIPA, titulares e suplentes, serão por ela designados.<br/>Os representantes dos empregados, titulares e suplentes, serão eleitos em escrutínio secreto, do qual participem, independentemente de filiação sindical, exclusivamente os empregados interessados.</p>
+                        </td>
+                    </tr>
                     {{#if dispensaPGR}}
                         <tr>
-                            <td colspan="2">
+                            <td colspan="3">
                                 <p class="obs">Com as características encontradas, a empresa consultada <strong>dispensa a elaboração de PGR</strong>. Também está dispensada da elaboração de PCMSO, desde que <strong>não</strong> sejam identificados riscos físicos, químicos, biológicos ou relacionados a fatores ergonômicos.
                                 </p>
                                 <p class="obs">Para a comprovação desta dispensa, é necessária a elaboração da <strong>Declaração de Inexistência de Riscos</strong>.</p>
                             </td>
                         </tr>        
                     {{/if}}
-                    {{#if obsSesmt1}}
-                        <tr>
-                            <td colspan="2">
-                                <p class="obs">(*) Tempo parcial (mínimo de três horas)</p>
-                            </td>
-                        </tr>
-                    {{/if}}
-                    {{#if obsSesmt3}}
-                        <tr>
-                            <td colspan="2">
-                                <p class="obs">(***) O empregador pode optar pela contratação de um enfermeiro do trabalho em tempo parcial, em substituição ao auxiliar ou técnico de enfermagem do trabalho</p>
-                            </td>
-                        </tr>
-                    {{/if}}
                 </tfooter>
                               
             </table>
         </section>
         <footer>
-            <p>Gerado em <a href="https://ferramentas.previsio.com.br/consulta-nr04" target="_blank">ferramentas.previsio.com.br/consulta-nr04</a></p>
+            <p>Gerado em <a href="https://ferramentas.previsio.com.br/consulta-nr05" target="_blank">ferramentas.previsio.com.br/consulta-nr05</a></p>
             <p>no dia {{dateTimeReport}}</p>
         </footer>
     </body>

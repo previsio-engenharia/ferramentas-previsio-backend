@@ -25,56 +25,55 @@ async function generateReport(req, res) {
 
     const { form: dataForm, response: dataResponse } = req.body;
     const { consulta, type, userEmail, receberEmail } = dataForm
-
+    /* 
+        console.log("DADOS RECEBIDOS")
+        console.log("FORM:", dataForm)
+        console.log("Response:", dataResponse)
+     */
 
     if (receberEmail && userEmail) {
-
+        //cria nome dos arquivos e caminhos de acordo com a consulta
         const paths = generatePath(consulta, type, dataResponse)
-        
-        console.log("vai pegar o template")
 
+        //console.log("vai pegar o template")
         await getTemplateHtml(paths.templatePath).then(async (res) => {
             // Now we have the html code of our template in res object
             // you can check by logging it on console
-            // console.log(res)
-
-            //
-            console.log("Compilando o template com o Handlebars");
+            //console.log("Compilando o template com o Handlebars");
             const template = hb.compile(res, { strict: true });
-            // we have compile our code with handlebars
-            const dateTime = paths.dateTimeReport
-            const result = template(dataForm, dataResponse, dateTime);
-            //console.log(result);
-            //sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
+            // compilou o template com o handlebars. Vai passar os parâmetros para o arquivo
+            const result = template({ dataForm, dataResponse, dateTimeReport: paths.dateTimeReport });
 
-            console.log('Escrever arquivo html');
-            //fs.writeFileSync(rPath, result);
-            const reportPath = `/tmp/${paths.fileName}`;
+            //console.log('Escrever arquivo html');
+            //cria arquivo com relatorio preenchido
+            const rootDir = path.resolve(__dirname, '../..')
+            const reportPath = `${rootDir}/tmp/${paths.fileName}`;
             fs.writeFileSync(reportPath, result, (err) => {
                 if (err) {
                     console.log(err);
                 }
             });
+            //console.log("Após isso vai tentar mandar por email")
 
-            console.log("Após isso vai tentar mandar por email")
-
-
-/*
-            console.log('Ler arquivo html do body...');
+            //console.log('Ler arquivo html do body...');
+            // lê o template de corpo do email
             let emailBody = fs.readFileSync(paths.emailBodyPath, 'utf8');
-            console.log('Ler arquivo html do anexo...');
+            //console.log('Ler arquivo html do anexo...');
+            // lê relatório para o anexo
             let attac = fs.readFileSync(reportPath, 'base64');
 
             //console.log(body);
-            console.log('Montando msg do email...')
-*/
-/*
+            //console.log('Montando msg do email...')
+
+            //console.log("destinatario:", dataForm.userEmail)
+            //console.log("assunto:", paths.emailSubject)
+
+            // monta a mensagem do email
             const msg = {
                 to: dataForm.userEmail,
                 from: process.env.MAIL_USER, // Use the email address or domain you verified above
                 replyTo: 'ped@previsio.com.br',
                 subject: paths.emailSubject,
-                //subject: 'Previsio - Relatório de Consulta NR',
                 html: emailBody,
                 attachments: [
                     {
@@ -82,23 +81,20 @@ async function generateReport(req, res) {
                         content: attac,
                         type: 'text/html',
                         disposition: 'attachment'
-                        //path: rPath
                     }
                 ]
             };
-*/
-/*
-            console.log('Enviar email..');
-            await sendMail(msg, reportPath);
-            return;
-*/
 
+            //console.log('Enviar email..');
+            //chame função de envio de email
+            await sendMail(msg, reportPath);
+            //return;
         }).catch(err => {
             console.error(err);
-            return;
+            return res.status(500).json("Não foi possível carregar o template de relatório");
         });
     };
-    return res.status(200).json("ok")
+    return res.status(200).json("E-mail enviado com sucesso")
 }
 
 module.exports = {
@@ -106,179 +102,31 @@ module.exports = {
 }
 
 
-
-
-
-
-/* 
-async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath, emailSubject) {
-
-    if (emailAddr) {
-
-        await getTemplateHtml(tPath).then(async (res) => {
-            // Now we have the html code of our template in res object
-            // you can check by logging it on console
-            // console.log(res)
-
-            //
-            const rPath = '/tmp/' + filename;
-            console.log("Compiling the template with handlebars");
-            const template = hb.compile(res, { strict: true });
-            // we have compile our code with handlebars
-            const result = template(data);
-            //console.log(result);
-            //sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
-
-            console.log('Escrever arquivo html');
-            //fs.writeFileSync(rPath, result);
-            fs.writeFileSync(rPath, result, (err) => {
-                if (err) {
-                    console.log(err);
-                }
-            });
-
-
-            console.log('Ler arquivo html do body...');
-            let body = fs.readFileSync(emailBodyPath, 'utf8');
-            console.log('Ler arquivo html do anexo...');
-            let attac = fs.readFileSync(rPath, 'base64');
-
-            //console.log(body);
-            console.log('Montando msg do email...')
-
-            const msg = {
-                to: emailAddr,
-                from: process.env.MAIL_USER, // Use the email address or domain you verified above
-                replyTo: 'ped@previsio.com.br',
-                subject: emailSubject,
-                //subject: 'Previsio - Relatório de Consulta NR',
-                html: body,
-                attachments: [
-                    {
-                        filename: filename,
-                        content: attac,
-                        type: 'text/html',
-                        disposition: 'attachment'
-                        //path: rPath
-                    }
-                ]
-            };
-
-            console.log('Enviar email..');
-            await sendMail(msg, rPath);
-            return;
-
-        }).catch(err => {
-            console.error(err);
-            return;
-        });
-
-    };
-}
- */
-/* 
-if (!respostaConsultaTabelas.erro && userEmail) {
-    //console.log(consulta);
-    let now = new Date();
-    now = date.addHours(now, -3); //timezone america-sao Paulo
-    const dateTimeReport = date.format(now, 'DD/MM/YY [às] HH:mm');
-    const dateTimeFilename = date.format(now, 'DDMMYY[_]HHmm');
-    var fileName;// = date.format(now, 'DDMMYY[_]HHmm');
-    var templatePath;
-    console.log(dateTimeFilename);
-
-    var mailInfo = {
-        subject: '',
-        title: '',
-    }
-
-
-    let emailBodyPath = '';
-    let emailSubject = '';
-
-    //var reportPath; // = './reports/report.pdf';
-
-    respostaConsultaTabelas.dateTimeReport = dateTimeReport;
-    //console.log(process.cwd());
-    if (consulta == 'nr04') {
-        if (cnpjInserido) {
-            const cnpj = cnpjInserido.replace(/\D/g, '');
-            fileName = 'previsio_nr04_' + cnpj + '_' + dateTimeFilename + '.html';
-            templatePath = __dirname + '/templates/relatorioSesmtCnpj.html';
-            //console.log(templatePath);
-            //process.cwd()+"/templates/relatorioSesmtCnpj.html";                
-        }
-        else {
-            const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
-            fileName = 'previsio_nr04_' + cnae + '_' + dateTimeFilename + '.html';
-            templatePath = __dirname + "/templates/relatorioSesmtCnae.html";
-        }
-        emailSubject = "Relatório NR04";
-        emailBodyPath = __dirname + '/templates/emailTemplateNR04.html';
-    } else if (consulta == 'nr05') {
-
-        if (cnpjInserido) {
-            const cnpj = cnpjInserido.replace(/\D/g, '');
-            fileName = 'previsio_nr05_' + cnpj + '_' + dateTimeFilename + '.html';
-            templatePath = __dirname + "/templates/relatorioCipaCnpj.html";
-        }
-        else {
-            const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
-            fileName = 'previsio_nr05_' + cnae + '_' + dateTimeFilename + '.html';
-            templatePath = __dirname + "/templates/relatorioCipaCnae.html";
-        }
-        emailSubject = "Relatório NR05";
-        emailBodyPath = __dirname + '/templates/emailTemplateNR05.html';
-    } else if (consulta == 'gr') {
-
-        if (cnpjInserido) {
-            const cnpj = cnpjInserido.replace(/\D/g, '');
-            fileName = 'previsio_gr_' + cnpj + '_' + dateTimeFilename + '.html';
-            templatePath = __dirname + "/templates/relatorioGrCnpj.html";
-        }
-        else {
-            const cnae = codigosCnaesConsultar[0].replace(/\D/g, '');
-            fileName = 'previsio_gr_' + cnae + '_' + dateTimeFilename + '.html';
-            templatePath = __dirname + "/templates/relatorioGrCnae.html";
-        }
-        emailSubject = "Relatório Grau de Risco";
-        emailBodyPath = __dirname + '/templates/emailTemplateGR.html';
-    } else {
-        console.log("não é possivel gerar o relatório");
-        return
-    }
-
-    //chama função para gerar PDF
-    await pdf.generatePdf(respostaConsultaTabelas, templatePath, fileName, userEmail, emailBodyPath, emailSubject);
-
-}
- */
-
-
 // criar diretorios
 function generatePath(consulta, type, dataResponse) {
-
-    //console.log(consulta);
-    const appDir = path.resolve(__dirname, '..')
+    //cria string do diretorio raiz do projeto
+    const rootDir = path.resolve(__dirname, '../..')
+    //pega hora atual de criação
     let now = new Date();
     now = date.addHours(now, -3); //timezone america-sao Paulo
     const dateTimeReport = date.format(now, 'DD/MM/YY [às] HH:mm');
     const dateTimeFilename = date.format(now, 'DDMMYY[_]HHmm');
+    //cria variaveis de nomes de arquivos e caminhos
     let fileName; // = date.format(now, 'DDMMYY[_]HHmm');
     let templatePath;
-    let emailBodyPath = `Relatório ${consulta.toUpperCase()}`;
-    let emailSubject = `${appDir}/templates/emailTemplate${consulta.toUpperCase()}.html`;
+    let emailSubject = `Relatório ${consulta.toUpperCase()}`;
+    let emailBodyPath = `${rootDir}/templates/emailTemplate_${consulta}.html`;
 
     switch (type) {
         case 'cnpj':
             const cnpj = dataResponse.dadosDaEmpresa.cnpj.replace(/\D/g, '');
             fileName = `previsio_${consulta}_${cnpj}_${dateTimeFilename}.html`
-            templatePath = `${appDir}/templates/relatorioSesmtCnpj.html`
+            templatePath = `${rootDir}/templates/relatorioCnpj_${consulta}.html`
             break;
         case 'cnae':
             const cnae = dataResponse.dadosCnaes[0].codigo.replace(/\D/g, '');
             fileName = `previsio_${consulta}_${cnae}_${dateTimeFilename}.html`
-            templatePath = `${appDir}/templates/relatorioSesmtCnae.html`
+            templatePath = `${rootDir}/templates/relatorioCnae_${consulta}.html`
             break;
         default:
             console.log("não é possivel gerar o relatório");
@@ -301,7 +149,6 @@ async function getTemplateHtml(tPath) {
     try {
         const reportPath = path.resolve(tPath);
         return await readFile(reportPath, 'utf8');
-
     } catch (err) {
         return Promise.reject("Could not load html template");
     }
