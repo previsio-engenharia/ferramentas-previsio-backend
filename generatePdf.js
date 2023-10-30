@@ -16,7 +16,7 @@ async function getTemplateHtml(tPath) {
     try {
         const reportPath = path.resolve(tPath);
         return await readFile(reportPath, 'utf8');
-        
+
     } catch (err) {
         return Promise.reject("Could not load html template");
     }
@@ -24,31 +24,31 @@ async function getTemplateHtml(tPath) {
 
 async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath, emailSubject) {
 
-    if(emailAddr){
-        
+    if (emailAddr) {
+
         await getTemplateHtml(tPath).then(async (res) => {
             // Now we have the html code of our template in res object
             // you can check by logging it on console
             // console.log(res)
-    
+
             //
-            const rPath = '/tmp/'+filename;
+            const rPath = '/tmp/' + filename;
             console.log("Compiling the template with handlebars");
-            const template = hb.compile(res, {strict: true});
+            const template = hb.compile(res, { strict: true });
             // we have compile our code with handlebars
             const result = template(data);
             //console.log(result);
             //sendEmail(emailAddr, rPath, filename, emailBodyPath, result);
-            
+
             console.log('Escrever arquivo html');
             //fs.writeFileSync(rPath, result);
             fs.writeFileSync(rPath, result, (err) => {
-                if(err) {
+                if (err) {
                     console.log(err);
                 }
             });
-            
-           
+
+
             console.log('Ler arquivo html do body...');
             let body = fs.readFileSync(emailBodyPath, 'utf8');
             console.log('Ler arquivo html do anexo...');
@@ -72,30 +72,30 @@ async function generatePdf(data, tPath, filename, emailAddr, emailBodyPath, emai
                         disposition: 'attachment'
                         //path: rPath
                     }
-                ]             
-              };
+                ]
+            };
 
-              console.log('Enviar email..');
-              await sendMail(msg, rPath);
-              return;
+            console.log('Enviar email..');
+            await sendMail(msg, rPath);
+            return;
 
         }).catch(err => {
             console.error(err);
             return;
         });
-        
-    };    
+
+    };
 }
 
 const sendMail = async (msg, rPath) => {
-    try{
+    try {
         await sgMail.send(msg).then(() => {
             console.log('Email enviado com sucesso!');
-            fs.unlink(rPath, ()=>{console.log('Arquivo deletado')});
-        })    
-    } catch(error){
+            fs.unlink(rPath, () => { console.log('Arquivo deletado') });
+        })
+    } catch (error) {
         console.log(error);
-        if(error.response){
+        if (error.response) {
             console.log(error.response.body);
         }
     }
