@@ -35,16 +35,17 @@ async function generateReport(req, res) {
         //cria nome dos arquivos e caminhos de acordo com a consulta
         const paths = generatePath(consulta, type, dataResponse)
 
-        //console.log("vai pegar o template")
+        console.log("vai pegar o template html")
         await getTemplateHtml(paths.templatePath).then(async (res) => {
             // Now we have the html code of our template in res object
             // you can check by logging it on console
             //console.log("Compilando o template com o Handlebars");
+            console.log("Escrever no html")
             const template = hb.compile(res, { strict: true });
             // compilou o template com o handlebars. Vai passar os parâmetros para o arquivo
             const result = template({ dataForm, dataResponse, dateTimeReport: paths.dateTimeReport });
 
-            //console.log('Escrever arquivo html');
+            console.log('Escrever arquivo html');
             //cria arquivo com relatorio preenchido
             const rootDir = path.resolve(__dirname, '../..')
             const reportPath = `${rootDir}/tmp/${paths.fileName}`;
@@ -53,17 +54,17 @@ async function generateReport(req, res) {
                     console.log(err);
                 }
             });
-            //console.log("Após isso vai tentar mandar por email")
+            console.log("Após isso vai tentar mandar por email")
 
-            //console.log('Ler arquivo html do body...');
+            console.log('Ler arquivo html do body...');
             // lê o template de corpo do email
             let emailBody = fs.readFileSync(paths.emailBodyPath, 'utf8');
-            //console.log('Ler arquivo html do anexo...');
+            console.log('Ler arquivo html do anexo...');
             // lê relatório para o anexo
             let attac = fs.readFileSync(reportPath, 'base64');
 
             //console.log(body);
-            //console.log('Montando msg do email...')
+            console.log('Montando msg do email...')
 
             //console.log("destinatario:", dataForm.userEmail)
             //console.log("assunto:", paths.emailSubject)
@@ -85,7 +86,7 @@ async function generateReport(req, res) {
                 ]
             };
 
-            //console.log('Enviar email..');
+            console.log('Enviar email..');
             //chame função de envio de email
             await sendMail(msg, reportPath);
             //return;
