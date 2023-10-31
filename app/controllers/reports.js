@@ -3,6 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('util');
 
+const dotenv = require("dotenv")
+dotenv.config({ path: ".env" })
+
+
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
