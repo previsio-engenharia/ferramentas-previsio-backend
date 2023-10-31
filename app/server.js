@@ -2,6 +2,7 @@ const express = require('express')
 var cors = require('cors')
 const path = require("path")
 const dotenv = require("dotenv")
+const { options } = require('./routes/reportGenerationRoutes')
 
 // necessário utilizar este dotenv.config e declarar qual é o arquivo .env utilizado
 // no código utiliza-se: process.env.NOME_DA_VARIAVEL
@@ -19,14 +20,12 @@ app.use(express.static(publicDirectory))
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
-/*
+
 var corsOptions = {
     origin: /previsio\.com.br$/,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
-*/
-
-app.use(cors())
+app.use(cors(corsOptions))
 
 //Routes
 //define as rotas utilizadas, neste caso direciona aos respectivos caminhos

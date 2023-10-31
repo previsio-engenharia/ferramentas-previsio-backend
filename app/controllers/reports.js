@@ -145,7 +145,7 @@ function generatePath(consulta, type, dataResponse) {
 
 //carrega o template no arquivo .html
 async function getTemplateHtml(tPath) {
-    console.log("Loading template file in memory:", tPath)
+    //console.log("Loading template file in memory:", tPath)
     try {
         const reportPath = path.resolve(tPath);
         return await readFile(reportPath, 'utf8');
@@ -158,8 +158,10 @@ async function getTemplateHtml(tPath) {
 const sendMail = async (msg, rPath) => {
     try {
         await sgMail.send(msg).then(() => {
-            console.log('Email enviado com sucesso!');
-            fs.unlink(rPath, () => { console.log('Arquivo deletado') });
+            //console.log('Email enviado com sucesso!');
+            fs.unlink(rPath, () => { 
+                //console.log('Arquivo deletado') 
+            });
         })
     } catch (error) {
         console.log(error);
