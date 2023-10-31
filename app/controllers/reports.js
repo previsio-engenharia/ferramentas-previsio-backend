@@ -13,7 +13,7 @@ const readFile = utils.promisify(fs.readFile);
 const date = require('date-and-time');
 
 async function generateReport(req, res) {
-    //console.log("Entrou na API!")
+    console.log("Chamada da API para gerar relatório e enviar por e-mail!")
 
     if (req.method != 'POST') {
         return res.status(405).json({
