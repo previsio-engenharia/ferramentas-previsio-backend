@@ -31,10 +31,9 @@ app.use(cors())
 //Routes
 //define as rotas utilizadas, neste caso direciona aos respectivos caminhos
 app.use('/api', require('./routes/reportGenerationRoutes'))
-//app.use('/company', require('./app/routes/company'))
 
 // inicia o servidor na porta 5000
 const PORT = process.env.PORT || 5000;
-app.listen(5000, () => {
+app.listen(PORT, () => {
     console.log("Server started on port 5000")
 })
