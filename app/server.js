@@ -27,6 +27,8 @@ var corsOptions = {
 }
 app.use(cors(corsOptions))
 
+//app.use(cors())
+
 //Routes
 //define as rotas utilizadas, neste caso direciona aos respectivos caminhos
 app.use('/api', require('./routes/reportGenerationRoutes'))

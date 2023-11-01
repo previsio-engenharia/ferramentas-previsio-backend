@@ -33,11 +33,11 @@
                 text-align: left;                
             }
             .tableHeaderH{
-                width: fit-content;
+                width: auto;
                 text-align: left;  
             }
             .tableHeaderHR{
-                width: fit-content;
+                width: 5%;
                 text-align: right;  
             }
             .header .infoPrevisio, .tableInfo{
@@ -47,6 +47,10 @@
             .tableInfoH{
                 width: fit-content;
                 text-align: left;  
+            }
+            .tableInfoHR{
+                width: 5%;
+                text-align: right;  
             }
             .header .infoPrevisio p{
                 padding: 0px;
@@ -151,19 +155,19 @@
                         <th class="tableHeader tableHeaderH">
                             Denominação
                         </th>
-                        <th class="tableHeader tableHeaderH">
+                        <th class="tableHeader tableHeaderHR">
                             Grau de Risco Associado
                         </th>
                     </tr>
                     {{#each dataResponse.dadosCnaes}}
                         <tr>
-                            <td class="tableInfo tableInfoH">                                
+                            <td class="tableInfo tableInfoH">
                                 {{this.codigo}}
                             </td>
-                            <td class="tableInfo tableInfoH">                                
+                            <td class="tableInfo tableInfoH">
                                 {{this.denominacao}}
                             </td>
-                            <td class="tableInfo tableInfoH">                                
+                            <td class="tableInfo tableInfoHR">
                                 {{this.grauDeRisco}}
                             </td>
                         </tr>

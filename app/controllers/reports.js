@@ -5,8 +5,7 @@ const utils = require('util');
 
 const dotenv = require("dotenv")
 dotenv.config({ path: ".env" })
-
-
+ 
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -25,7 +24,7 @@ async function generateReport(req, res) {
             mensagem: 'Método da requisição não permitido',
         })
     }
-
+  
     const { form: dataForm, response: dataResponse } = req.body;
     const { consulta, type, userEmail, receberEmail } = dataForm
     /* 
@@ -46,12 +45,18 @@ async function generateReport(req, res) {
             //console.log("Escrever no html")
             const template = hb.compile(res, { strict: true });
             // compilou o template com o handlebars. Vai passar os parâmetros para o arquivo
-            const result = template({ dataForm, dataResponse, dateTimeReport: paths.dateTimeReport });
-
+            const tipoConsulta = {
+                gr: (consulta === 'gr'),
+                nr04: (consulta === 'nr04'),
+                nr05: (consulta === 'nr05'),
+            }
+            const result = template({ tipoConsulta, dataForm, dataResponse, dateTimeReport: paths.dateTimeReport });
+ 
             //console.log('Escrever arquivo html');
             //cria arquivo com relatorio preenchido
-            const rootDir = path.resolve(__dirname, '../..')
-            const reportPath = `/tmp/${paths.fileName}`;
+            const rootDir = path.resolve(__dirname, '../..');
+            //const reportPath = `/tmp/${paths.fileName}`;
+            const reportPath = `${rootDir}/tmp/${paths.fileName}`;
             fs.writeFileSync(reportPath, result, (err) => {
                 if (err) {
                     console.log(err);
@@ -91,7 +96,9 @@ async function generateReport(req, res) {
 
             //console.log('Enviar email..');
             //chame função de envio de email
+
             await sendMail(msg, reportPath);
+            
             //return;
         }).catch(err => {
             console.error(err);
@@ -125,12 +132,12 @@ function generatePath(consulta, type, dataResponse) {
         case 'cnpj':
             const cnpj = dataResponse.dadosDaEmpresa.cnpj.replace(/\D/g, '');
             fileName = `previsio_${consulta}_${cnpj}_${dateTimeFilename}.html`
-            templatePath = `${rootDir}/templates/relatorioCnpj_${consulta}.html`
+            //templatePath = `${rootDir}/templates/relatorioCnpj_${consulta}.html`
             break;
         case 'cnae':
             const cnae = dataResponse.dadosCnaes[0].codigo.replace(/\D/g, '');
             fileName = `previsio_${consulta}_${cnae}_${dateTimeFilename}.html`
-            templatePath = `${rootDir}/templates/relatorioCnae_${consulta}.html`
+            //templatePath = `${rootDir}/templates/relatorioCnae_${consulta}.html`
             break;
         default:
             console.log("não é possivel gerar o relatório");
@@ -141,7 +148,7 @@ function generatePath(consulta, type, dataResponse) {
     return {
         dateTimeReport,
         fileName,
-        templatePath,
+        templatePath: `${rootDir}/templates/relatorioGenerico.html`,
         emailBodyPath,
         emailSubject
     }
