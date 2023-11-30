@@ -91,8 +91,8 @@ async function generateReport(req, res) {
             // monta a mensagem do email
             const msg = {
                 to: dataForm.userEmail,
-                from: process.env.MAIL_USER, // Use the email address or domain you verified above
-                replyTo: 'ped@previsio.com.br',
+                from: `Previsio Engenharia <${process.env.MAIL_USER}>`, // Use the email address or domain you verified above
+                reply_to: 'ped@previsio.com.br',
                 subject: paths.emailSubject,
                 html: emailBody,
                 attachments: [
