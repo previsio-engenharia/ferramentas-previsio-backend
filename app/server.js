@@ -19,15 +19,15 @@ app.use(express.static(publicDirectory))
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
- 
-var corsOptions = {
+
+/* var corsOptions = {
     origin: /previsio\.com.br$/,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 app.use(cors(corsOptions))
 
-
-//app.use(cors())
+ */
+app.use(cors())
 
 //Routes
 //define as rotas utilizadas, neste caso direciona aos respectivos caminhos
