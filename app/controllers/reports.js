@@ -5,15 +5,26 @@ const utils = require('util');
 
 const dotenv = require("dotenv")
 dotenv.config({ path: ".env" })
- 
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+//E-MAIL:
+//sendgrid
+    // substituido pelo RESEND
+//const sgMail = require('@sendgrid/mail');
+//sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+
+//resend
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 var buffer = require('buffer/').Buffer;
 
 const readFile = utils.promisify(fs.readFile);
 
 const date = require('date-and-time');
+//const { resendEmail } = require('../utils/resend.mjs');
+
 
 async function generateReport(req, res) {
     console.log("Chamada da API para gerar relatório e enviar por e-mail!")
@@ -24,7 +35,7 @@ async function generateReport(req, res) {
             mensagem: 'Método da requisição não permitido',
         })
     }
-  
+
     const { form: dataForm, response: dataResponse } = req.body;
     const { consulta, type, userEmail, receberEmail } = dataForm
     /* 
@@ -51,12 +62,12 @@ async function generateReport(req, res) {
                 nr05: (consulta === 'nr05'),
             }
             const result = template({ tipoConsulta, dataForm, dataResponse, dateTimeReport: paths.dateTimeReport });
- 
+
             //console.log('Escrever arquivo html');
             //cria arquivo com relatorio preenchido
             const rootDir = path.resolve(__dirname, '../..');
-            const reportPath = `/tmp/${paths.fileName}`;
-            //const reportPath = `${rootDir}/tmp/${paths.fileName}`;
+            const reportPath = `/tmp/${paths.fileName}`;  //alterar (comentar) essa linha quando localhost
+            //const reportPath = `${rootDir}/tmp/${paths.fileName}`; //alterar (comentar) essa linha quando localhost
             fs.writeFileSync(reportPath, result, (err) => {
                 if (err) {
                     console.log(err);
@@ -97,8 +108,10 @@ async function generateReport(req, res) {
             //console.log('Enviar email..');
             //chame função de envio de email
 
-            await sendMail(msg, reportPath);
-            
+            //await sendMail(msg, reportPath);
+            await resendEmail(msg, reportPath);
+
+
             //return;
         }).catch(err => {
             console.error(err);
@@ -165,17 +178,38 @@ async function getTemplateHtml(tPath) {
     }
 }
 
-// função envio de e-mail
+/*
+// função envio de e-mail [SENDGRID]
 const sendMail = async (msg, rPath) => {
     try {
         await sgMail.send(msg).then(() => {
             //console.log('Email enviado com sucesso!');
-            fs.unlink(rPath, () => { 
+            fs.unlink(rPath, () => {
                 //console.log('Arquivo deletado') 
             });
         })
     } catch (error) {
         console.log(error);
+        if (error.response) {
+            console.log(error.response.body);
+        }
+    }
+}
+*/
+
+
+//função envio de e-mail com o RESEND:
+const resendEmail = async (msg, rPath) => {
+    try {
+        const data = await resend.emails.send(msg);
+        console.log('Email enviado com sucesso!', data);
+        fs.unlink(rPath, () => {
+            console.log('Arquivo deletado')
+        });
+        //res.status(200).json({ data });
+    } catch (error) {
+       // res.status(500).json({ error });
+       console.log(error);
         if (error.response) {
             console.log(error.response.body);
         }
