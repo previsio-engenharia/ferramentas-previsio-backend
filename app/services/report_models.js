@@ -1,7 +1,8 @@
-function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeReport) {
-
+//função que preenche um documento pdfkit com os relatorios (GR, NR04 ou NR05)
+function report_model(doc, consulta, dataForm, dataResponse, dateTimeReport) {
     //doc.moveDown(3)
     if (consulta == 'gr') {
+        //Introdução para consultas GR:
         //título 1
         doc.font('Times-Bold')
             .fontSize(18)
@@ -16,18 +17,21 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 align: 'justify',
             })
         if (dataResponse.dadosDaEmpresa) {
+            // texto se a consulta foi com CNPJ
             doc.moveDown()
                 .text('Os dados deste documento foram consultados a partir do CNPJ fornecido pelo usuário requisitante. Os dados relativos ao CNPJ informado são públicos, disponibilizados pela Receita Federal, e podem estar desatualizados.', {
                     align: 'justify',
                 })
         }
         else {
+            // texto se a consulta foi com CNAEs
             doc.moveDown()
                 .text('Os dados deste documento foram consultados a partir dos códigos CNAE fornecidos pelo usuário requisitante.', {
                     align: 'justify',
                 })
         }
     } else if (consulta == 'nr04') {
+        //Introdução para consultas NR04:
         //título 1
         doc.font('Times-Bold')
             .fontSize(18)
@@ -42,18 +46,21 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 align: 'justify',
             })
         if (dataResponse.dadosDaEmpresa) {
+            // texto se a consulta foi com CNPJ
             doc.moveDown()
                 .text('Os dados deste documento foram consultados a partir do CNPJ e da quantidade de trabalhadores na empresa, fornecidos pelo usuário requisitante. Os dados relativos ao CNPJ informado são públicos, disponibilizados pela Receita Federal, e podem estar desatualizados.', {
                     align: 'justify',
                 })
         }
         else {
+            // texto se a consulta foi com CNAEs
             doc.moveDown()
                 .text('Os dados deste documento foram consultados a partir dos códigos CNAE e da quantidade de trabalhadores na empresa, fornecidos pelo usuário requisitante.', {
                     align: 'justify',
                 })
         }
     } else if (consulta == 'nr05') {
+        //Introdução para consultas NR05:
         //título 1
         doc.font('Times-Bold')
             .fontSize(18)
@@ -68,19 +75,21 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 align: 'justify',
             })
         if (dataResponse.dadosDaEmpresa) {
+            // texto se a consulta foi com CNPJ
             doc.moveDown()
                 .text('Os dados deste documento foram consultados a partir do CNPJ e da quantidade de trabalhadores na empresa, fornecidos pelo usuário requisitante. Os dados relativos ao CNPJ informado são públicos, disponibilizados pela Receita Federal, e podem estar desatualizados.', {
                     align: 'justify',
                 })
         }
         else {
+            // texto se a consulta foi com CNAEs
             doc.moveDown()
                 .text('Os dados deste documento foram consultados a partir dos códigos CNAE e da quantidade de trabalhadores na empresa, fornecidos pelo usuário requisitante.', {
                     align: 'justify',
                 })
         }
     }
-
+    // Primeira tabela: Caracteristicas da Empresa (dados base da consulta)
     //titulo tabela
     doc.fontSize(16)
         .font('Times-Bold')
@@ -89,7 +98,8 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
             align: 'left'
         })
 
-    if (dataResponse.dadosDaEmpresa) { //quer dizer que o CNPJ foi consultado
+    if (dataResponse.dadosDaEmpresa) {
+        // tabela se a consulta foi com CNPJ
         const tableDadosEmpresa = {
             headers: ['', ''], // sem texto no header horizontal. Apenas indicar o numero de colunas
             rows: [
@@ -102,12 +112,12 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 ['Grau de Risco da Empresa', dataResponse.dadosDaEmpresa.maiorGrauDeRisco],
             ]
         };
+        // insere linha com numero de trabalhadores, caso inserido na consulta
         if (dataResponse.dadosDaEmpresa.numero_trabalhadores) {
             tableDadosEmpresa.rows.push(['Número de Trabalhadores', dataResponse.dadosDaEmpresa.numero_trabalhadores])
         };
 
         // escreve tabela no documento
-        // este método .table é implementado no pdfkitTable.js
         doc.fontSize(12)
             .table(tableDadosEmpresa, {
                 prepareHeader: () => doc.font('Times-Bold').fontSize(10),
@@ -118,7 +128,7 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 columnAlignments: ['left', 'right']
             });
 
-        // OBS dispensa PGR
+        // texto da OBS dispensa PGR
         if (dataResponse.dadosDaEmpresa.dispensaPGR) {
             doc.fontSize(10)
                 .font('Times-Roman')
@@ -131,8 +141,8 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 })
         }
     }
-    else { //Consultado apenas os Cnaes
-
+    else {
+        // tabela se a consulta foi com CNAEs
         const tableDadosCnaes = {
             headers: ['Código CNAE', 'Denominação', 'Grau de Risco Associado'], // sem texto no header horizontal. Apenas indicar o numero de colunas
             rows: []
@@ -140,7 +150,7 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
         dataResponse.dadosCnaes.forEach(cnae => {
             tableDadosCnaes.rows.push([cnae.codigo, cnae.denominacao, cnae.grauDeRisco])
         });
-
+        // escreve tabela com os dados dos CNAEs
         doc.fontSize(12)
             .moveDown()
             .table(tableDadosCnaes, {
@@ -150,14 +160,14 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 columnWidths: [80, 350, 85],
                 columnAlignments: ['left', 'left', 'right']
             });
-
-
+        // insere linha com numero de trabalhadores, caso inserido na consulta
+        //  na consulta com CNAEs isso aparece um pouco diferente
         if (dataForm.numero_trabalhadores) {
             const tableNroTrab = {
                 headers: ['', ''],
                 rows: [['Número de Trabalhadores', dataForm.numero_trabalhadores]]
             };
-
+            //escreve a tabela
             doc.fontSize(12)
                 //.moveDown()
                 .table(tableNroTrab, {
@@ -172,15 +182,16 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
 
     }
 
+    //caso a consulta seja NR04 ou NR05, há mais dados para mostrar
     if (consulta == 'nr04') {
-        //titulo tabela 2
+        //insere titulo tabela 2
         doc.fontSize(16)
             .font('Times-Bold')
             .moveDown()
             .text('EQUIPE SESMT NECESSÁRIA', {
                 align: 'left'
             })
-
+        //constroi tabela SESMT
         const tableSesmt = {
             headers: ['', ''], // sem texto no header horizontal. Apenas indicar o numero de colunas
             rows: [
@@ -191,9 +202,7 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 ['Médicos', dataResponse.consultaSesmt.medico],
             ]
         };
-
         // escreve tabela no documento
-        // este método .table é implementado no pdfkitTable.js
         doc.fontSize(12)
             .table(tableSesmt, {
                 prepareHeader: () => doc.font('Times-Bold').fontSize(10),
@@ -205,7 +214,7 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
             });
 
         if (dataResponse.consultaSesmt.obsSesmt1) {
-            // OBS 1
+            // texto da OBS 1 da NR04
             doc.fontSize(10)
                 .font('Times-Roman')
                 //.moveDown()
@@ -215,7 +224,7 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
         }
 
         if (dataResponse.consultaSesmt.obsSesmt3) {
-            // OBS 3
+            // texto da OBS 3 da NR04
             doc.fontSize(10)
                 .font('Times-Roman')
                 //.moveDown()
@@ -223,8 +232,6 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                     align: 'justify',
                 })
         }
-
-
     } else if (consulta == 'nr05') {
         //titulo tabela 2
         doc.fontSize(16)
@@ -233,7 +240,7 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
             .text('EQUIPE CIPA NECESSÁRIA', {
                 align: 'left'
             })
-
+        //constroi tabela
         const tableCipa = {
             headers: ['', 'Representantes da organização', 'Representantes dos empregados'], // sem texto no header horizontal. Apenas indicar o numero de colunas
             rows: [
@@ -241,9 +248,7 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 ['Membros da equipe suplente', dataResponse.consultaCipa.cipaSuplentes, dataResponse.consultaCipa.cipaSuplentes],
             ]
         };
-
         // escreve tabela no documento
-        // este método .table é implementado no pdfkitTable.js
         doc.fontSize(12)
             .moveDown()
             .table(tableCipa, {
@@ -254,7 +259,7 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 columnWidths: [155, 180, 180],
                 columnAlignments: ['left', 'right', 'right']
             });
-
+        // observação da NR05
         doc.fontSize(10)
             .font('Times-Roman')
             //.moveDown()
@@ -265,26 +270,27 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 align: 'justify',
             })
     }
-
+    //adiciona link e data-hora da geração no fim da página
     doc.addFooter(consulta, dateTimeReport);
-
+    // se a consulta foi com CNPJ, adiciona uma segunda página e lista todos CNAEs associados
     if (dataResponse.dadosDaEmpresa && dataResponse.dadosCnaes) {
+        //adiciona página padrão
         doc.addPage();
-
+        //Título da tabela
         doc.fontSize(16)
             .font('Times-Bold')
             .text('CNAES CADASTRADOS', {
                 align: 'left'
             })
-
+        //constrói tabela
         const tableDadosCnaes = {
-            headers: ['Código CNAE', 'Denominação', 'Grau de Risco Associado'], 
+            headers: ['Código CNAE', 'Denominação', 'Grau de Risco Associado'],
             rows: []
         };
         dataResponse.dadosCnaes.forEach(cnae => {
             tableDadosCnaes.rows.push([cnae.codigo, cnae.denominacao, cnae.grauDeRisco])
         });
-
+        //escreve tabela no doc
         doc.fontSize(12)
             .moveDown()
             .table(tableDadosCnaes, {
@@ -294,7 +300,7 @@ function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeRepor
                 columnWidths: [80, 350, 85],
                 columnAlignments: ['left', 'left', 'right']
             });
-
+        //adiciona link e data-hora da geração no fim da página
         doc.addFooter(consulta, dateTimeReport);
     }
 }

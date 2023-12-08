@@ -9,6 +9,7 @@ const pageSize = 'A4';
 const pageSizeX = 595;
 const pageSizeY = 841;
 const marginSize = 40;
+//imagem do logo > usa o path pra acessar a pasta public
 const rootDir = path.resolve(__dirname, '../..');
 const logoImage = `${rootDir}/public/logo-total.png`;
 const logoWidth = 140;
@@ -250,7 +251,7 @@ class PDFDocumentWithTables extends PDFDocument {
     }
 }
 
-function createDoc(fileDirectory) {
+function createDoc() {
     // cria documento
     const doc = new PDFDocumentWithTables(options);
     return doc;
