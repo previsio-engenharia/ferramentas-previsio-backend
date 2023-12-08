@@ -24,8 +24,8 @@ var corsOptions = {
     origin: /previsio\.com.br$/,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
-app.use(cors(corsOptions))
-//app.use(cors())
+//app.use(cors(corsOptions))
+app.use(cors())
 
 //Routes
 //define as rotas utilizadas, neste caso direciona aos respectivos caminhos
