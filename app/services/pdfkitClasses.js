@@ -10,7 +10,7 @@ const pageSizeX = 595;
 const pageSizeY = 841;
 const marginSize = 40;
 const rootDir = path.resolve(__dirname, '../..');
-const logoImage = 'rootDir/public/logo-total.png';
+const logoImage = `${rootDir}/public/logo-total.png`;
 const logoWidth = 140;
 
 const options = {
