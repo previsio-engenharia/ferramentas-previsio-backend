@@ -23,8 +23,8 @@ var buffer = require('buffer/').Buffer;
 const readFile = utils.promisify(fs.readFile);
 
 const date = require('date-and-time');
-//const pdf = require('../services/generatePdfReport');
 const pdf = require('../services/generatePdf_Modelo');
+//const {pdf} = require('../services/generatePdf_Modelo.js');
 
 async function generateReport(req, res) {
     console.log("Chamada da API para gerar relatório e enviar por e-mail!")
@@ -121,8 +121,6 @@ async function generateReport(req, res) {
     return res.status(200).json("E-mail enviado com sucesso")
 }
 
-
-
 async function pdfReport(req, res) {
     console.log("Chamada da API para gerar relatório em PDF!")
 
@@ -135,49 +133,36 @@ async function pdfReport(req, res) {
 
     const { form: dataForm, response: dataResponse } = req.body;
     const { consulta, type, userEmail, receberEmail } = dataForm
-    console.log("DADOS RECEBIDOS")
-    console.log("FORM:", dataForm)
-    console.log("Response:", dataResponse)
+    //console.log("DADOS RECEBIDOS")
+    //console.log("FORM:", dataForm)
+    //console.log("Response:", dataResponse)
 
     ////
 
     if (receberEmail && userEmail) {
         //cria nome dos arquivos e caminhos de acordo com a consulta
-        const paths = generatePath(consulta, type,  dataResponse)
-        console.log("PATH:", paths.fileName, paths.dateTimeReport)
-/* 
-        const tipoConsulta = {
-            gr: (consulta === 'gr'),
-            nr04: (consulta === 'nr04'),
-            nr05: (consulta === 'nr05'),
-        }
- */
+        const paths = generatePath(consulta, type, dataResponse)
+        //console.log("PATH:", paths.fileName, paths.dateTimeReport)
+
         const rootDir = path.resolve(__dirname, '../..');
 
-        const reportFile = rootDir+'/tmp/'+paths.fileName
+        const reportFile = rootDir + '/tmp/' + paths.fileName
 
-        await pdf(reportFile, consulta, type, dataForm, dataResponse, paths.dateTimeReport);
+        const pdfBuffer = await pdf(reportFile, consulta, type, dataForm, dataResponse, paths.dateTimeReport);
         console.log("gerou?")
 
+        //console.log("PDF Buffer:", pdfBuffer.toString('utf8'));
+        const pdfBase64 = pdfBuffer.toString('base64');
+        //const pdfString = await pdfBuffer.toString('utf8')
+        //console.log("PDF", !!pdfString);
 
-        // Now we have the html code of our template in res object
-        // you can check by logging it on console
-        //console.log("Compilando o template com o Handlebars");
-        //console.log("Escrever no html")
-        //const template = hb.compile(res, { strict: true });
-        // compilou o template com o handlebars. Vai passar os parâmetros para o arquivo 
-
-        //const result = template({ tipoConsulta, dataForm, dataResponse, dateTimeReport: paths.dateTimeReport });
-
-        //console.log('Escrever arquivo html');
-        //cria arquivo com relatorio preenchido
-        //const rootDir = path.resolve(__dirname, '../..');
-        //const reportPath = `/tmp/${paths.fileName}`;  //alterar (comentar) essa linha quando localhost
-        //const reportPath = `${rootDir}/tmp/${paths.fileName}`; //alterar (comentar) essa linha quando localhost
-
-
+        //console.log('Enviar email..');
+        //chame função de envio de email
         // monta a mensagem do email
-        /*
+        let emailBody = fs.readFileSync(paths.emailBodyPath, 'utf8');
+        //let attac = fs.readFileSync(reportFile);
+
+        console.log("Montando msg")
         const msg = {
             to: dataForm.userEmail,
             from: `Previsio Engenharia <${process.env.MAIL_USER}>`, // Use the email address or domain you verified above
@@ -187,21 +172,19 @@ async function pdfReport(req, res) {
             attachments: [
                 {
                     filename: paths.fileName,
-                    content: attac,
-                    type: 'text/html',
+                    //content: attac,
+                    content: pdfBase64,
+                    type: 'application/pdf',
                     disposition: 'attachment'
                 }
             ]
         };
-        */
+        console.log("Enviar email")
 
-        //console.log('Enviar email..');
-        //chame função de envio de email
+        await resendEmail(msg, reportFile);
 
-        //await sendMail(msg, reportPath);
-        //await resendEmail(msg, reportPath);
     };
-    return res.status(200).json("E-mail enviado com sucesso")
+    return res.status(200).json("E-mail enviado com sucesso");
 
 }
 

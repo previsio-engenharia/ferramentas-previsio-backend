@@ -1,6 +1,6 @@
-function gr_model2(doc, consulta, type, dataForm, dataResponse) {
+function report_model(doc, consulta, type, dataForm, dataResponse, dateTimeReport) {
 
-    doc.moveDown(3)
+    //doc.moveDown(3)
     if (consulta == 'gr') {
         //título 1
         doc.font('Times-Bold')
@@ -109,7 +109,7 @@ function gr_model2(doc, consulta, type, dataForm, dataResponse) {
         // escreve tabela no documento
         // este método .table é implementado no pdfkitTable.js
         doc.fontSize(12)
-            .tableV(tableDadosEmpresa, {
+            .table(tableDadosEmpresa, {
                 prepareHeader: () => doc.font('Times-Bold').fontSize(10),
                 prepareRow: (row, i) => doc.font('Times-Roman').fontSize(10),
                 //horizontalHeader: false,
@@ -134,7 +134,7 @@ function gr_model2(doc, consulta, type, dataForm, dataResponse) {
     else { //Consultado apenas os Cnaes
 
         const tableDadosCnaes = {
-            headers: ['CNAE Consultado', 'Denominação', 'Grau de Risco Associado'], // sem texto no header horizontal. Apenas indicar o numero de colunas
+            headers: ['Código CNAE', 'Denominação', 'Grau de Risco Associado'], // sem texto no header horizontal. Apenas indicar o numero de colunas
             rows: []
         };
         dataResponse.dadosCnaes.forEach(cnae => {
@@ -143,11 +143,11 @@ function gr_model2(doc, consulta, type, dataForm, dataResponse) {
 
         doc.fontSize(12)
             .moveDown()
-            .tableV(tableDadosCnaes, {
+            .table(tableDadosCnaes, {
                 prepareHeader: () => doc.font('Times-Bold').fontSize(10),
                 prepareRow: (row, i) => doc.font('Times-Roman').fontSize(10),
                 verticalHeader: false,
-                columnWidths: [100, 330, 85],
+                columnWidths: [80, 350, 85],
                 columnAlignments: ['left', 'left', 'right']
             });
 
@@ -160,7 +160,7 @@ function gr_model2(doc, consulta, type, dataForm, dataResponse) {
 
             doc.fontSize(12)
                 //.moveDown()
-                .tableV(tableNroTrab, {
+                .table(tableNroTrab, {
                     prepareHeader: () => doc.font('Times-Bold').fontSize(10),
                     prepareRow: (row, i) => doc.font('Times-Roman').fontSize(10),
                     verticalHeader: true,
@@ -195,7 +195,7 @@ function gr_model2(doc, consulta, type, dataForm, dataResponse) {
         // escreve tabela no documento
         // este método .table é implementado no pdfkitTable.js
         doc.fontSize(12)
-            .tableV(tableSesmt, {
+            .table(tableSesmt, {
                 prepareHeader: () => doc.font('Times-Bold').fontSize(10),
                 prepareRow: (row, i) => doc.font('Times-Roman').fontSize(10),
                 //horizontalHeader: false,
@@ -246,7 +246,7 @@ function gr_model2(doc, consulta, type, dataForm, dataResponse) {
         // este método .table é implementado no pdfkitTable.js
         doc.fontSize(12)
             .moveDown()
-            .tableV(tableCipa, {
+            .table(tableCipa, {
                 prepareHeader: () => doc.font('Times-Bold').fontSize(10),
                 prepareRow: (row, i) => doc.font('Times-Roman').fontSize(10),
                 //horizontalHeader: false,
@@ -266,85 +266,39 @@ function gr_model2(doc, consulta, type, dataForm, dataResponse) {
             })
     }
 
+    doc.addFooter(consulta, dateTimeReport);
 
-    /* 
-        // escreve tabela no documento
-        // este método .table é implementado no pdfkitTable.js
+    if (dataResponse.dadosDaEmpresa && dataResponse.dadosCnaes) {
+        doc.addPage();
+
+        doc.fontSize(16)
+            .font('Times-Bold')
+            .text('CNAES CADASTRADOS', {
+                align: 'left'
+            })
+
+        const tableDadosCnaes = {
+            headers: ['Código CNAE', 'Denominação', 'Grau de Risco Associado'], 
+            rows: []
+        };
+        dataResponse.dadosCnaes.forEach(cnae => {
+            tableDadosCnaes.rows.push([cnae.codigo, cnae.denominacao, cnae.grauDeRisco])
+        });
+
         doc.fontSize(12)
             .moveDown()
-            .table(tableDadosEmpresa, {
+            .table(tableDadosCnaes, {
                 prepareHeader: () => doc.font('Times-Bold').fontSize(10),
                 prepareRow: (row, i) => doc.font('Times-Roman').fontSize(10),
-                verticalHeader: true,
-                columnWidths: [100, 330, 85],
+                verticalHeader: false,
+                columnWidths: [80, 350, 85],
                 columnAlignments: ['left', 'left', 'right']
-            }); */
-}
+            });
 
-
-function gr_model(doc) {
-    //título 1
-    doc.moveDown(3)
-        .font('Times-Bold')
-        .fontSize(18)
-        .text('CONSULTA GR: GRAU DE RISCO', {
-            align: 'center'
-        })
-
-    //texto
-    doc.fontSize(12)
-        .font('Times-Roman')
-        .moveDown()
-        .text('O Grau de Risco de uma empresa é definido na NR04, classificado em 4 níveis, de 1 a 4, e indica a intensidade dos riscos de caráter físico, químico, biológico, ergonômicos e acidentais que os trabalhadores podem estar expostos.', {
-            align: 'justify',
-        })
-    doc.moveDown()
-        .text('Os dados deste documento foram consultados a partir dos códigos CNAE fornecidos pelo usuário requisitante.', {
-            align: 'justify',
-        })
-
-    //titulo tabela
-    doc.fontSize(16)
-        .font('Times-Bold')
-        .moveDown()
-        .text('CARACTERÍSTICAS DA EMPRESA', {
-            align: 'left'
-        })
-
-    // cria dados da primeira tabela
-    /* const table0 = {
-        headers: ['CNAE Consultado', 'Denominação', 'Grau de Risco Associado'],
-        rows: [
-            ['01.19-9', 'Cultivo de plantas de lavoura temporária não especificadas anteriormente. Cultivo de plantas de lavoura temporária não', '4'],
-            ['01.19-9', 'Cultivo de plantas de lavoura temporária não especificadas anteriormente', '3'],
-            ['01.19-9', 'Cultivo de plantas de lavoura temporária não. Cultivo de plantas de lavoura temporária não especificadas anteriormente. Cultivo de plantas de lavoura temporária não especificadas anteriormente', '3'],
-            ['01.19-9', 'Cultivo de plantas de lavoura temporária não especificadas anteriormente', '3'],
-        ]
-    }; */
-    const table0 = {
-        headers: ['', 'Representantes da organização', 'Representantes dos empregados'],
-        rows: [
-            ['Membros da equipe efetiva', '2', '2'],
-            ['Membros da equipe suplente', '1', '1'],
-
-        ]
-    };
-
-
-    // escreve tabela no documento
-    // este método .table é implementado no pdfkitTable.js
-    doc.fontSize(12)
-        .moveDown()
-        .tableV(table0, {
-            prepareHeader: () => doc.font('Times-Bold').fontSize(10),
-            prepareRow: (row, i) => doc.font('Times-Roman').fontSize(10),
-            verticalHeader: true,
-            columnWidths: [180, 150, 150],
-            columnAlignments: ['left', 'right', 'right']
-        });
+        doc.addFooter(consulta, dateTimeReport);
+    }
 }
 
 module.exports = {
-    gr_model,
-    gr_model2
+    report_model
 };
