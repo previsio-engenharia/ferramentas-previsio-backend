@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const path = require("path");
 const PDFDocument = require('pdfkit');
 
 // configurações da página
@@ -8,7 +9,8 @@ const pageSize = 'A4';
 const pageSizeX = 595;
 const pageSizeY = 841;
 const marginSize = 40;
-const logoImage = '/logo-total.png';
+const rootDir = path.resolve(__dirname, '../..');
+const logoImage = 'rootDir/public/logo-total.png';
 const logoWidth = 140;
 
 const options = {
