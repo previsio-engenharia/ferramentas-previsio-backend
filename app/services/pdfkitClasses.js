@@ -8,7 +8,7 @@ const pageSize = 'A4';
 const pageSizeX = 595;
 const pageSizeY = 841;
 const marginSize = 40;
-const logoImage = '/static/images/logo-total.png';
+const logoImage = '/logo-total.png';
 const logoWidth = 140;
 
 const options = {
