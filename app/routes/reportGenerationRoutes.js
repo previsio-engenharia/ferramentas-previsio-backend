@@ -1,13 +1,13 @@
 const express = require('express')
 const router = express.Router()
 //controllers
-const { generateReport, pdfReport } = require('../controllers/reports')
+const { pdfReport } = require('../controllers/reports')
 
 
 //GET
 
 //POST
-router.post('/report', generateReport);
+router.post('/report', pdfReport);
 
 //PUT
 //router.put('/user/updateUserInfo')
@@ -16,6 +16,6 @@ router.post('/report', generateReport);
 
 
 //testes com pdfkit:
-router.post('/pdf', pdfReport);
+//router.post('/pdf', pdfReport);
 
 module.exports = router

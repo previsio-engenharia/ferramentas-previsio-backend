@@ -23,6 +23,8 @@ const readFile = utils.promisify(fs.readFile);
 const date = require('date-and-time');
 const generatePdfBuffer = require('../services/generatePdf_Modelo');
 
+// api antiga, não é mais chamada
+/*
 async function generateReport(req, res) {
     console.log("Chamada da API para gerar relatório e enviar por e-mail!")
 
@@ -35,11 +37,6 @@ async function generateReport(req, res) {
 
     const { form: dataForm, response: dataResponse } = req.body;
     const { consulta, type, userEmail, receberEmail } = dataForm
-    /* 
-        console.log("DADOS RECEBIDOS")
-        console.log("FORM:", dataForm)
-        console.log("Response:", dataResponse)
-     */
 
     if (receberEmail && userEmail) {
         //cria nome dos arquivos e caminhos de acordo com a consulta
@@ -117,7 +114,9 @@ async function generateReport(req, res) {
     };
     return res.status(200).json("E-mail enviado com sucesso")
 }
+*/
 
+// gera report com pdfkit sem sarvar o arquivo (vai direto no anexo)
 async function pdfReport(req, res) {
     console.log("Chamada da API para gerar relatório em PDF!");
 
@@ -188,7 +187,7 @@ async function pdfReport(req, res) {
 }
 
 module.exports = {
-    generateReport,
+    //generateReport,
     pdfReport,
 }
 
