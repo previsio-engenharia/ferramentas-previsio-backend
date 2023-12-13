@@ -44,13 +44,13 @@ class PDFDocumentWithTables extends PDFDocument {
         // endereço
         this.moveDown(0.15)
             .font('Times-Roman')
-            .text('Rua Júlio de Castilhos, 45, bairro Niterói', {
+            .text('Rua Monteiro Lobato, 149, bairro Rio Branco', {
                 align: 'right'
             })
         // cidade
         this.moveDown(0.15)
             .font('Times-Roman')
-            .text('Canoas - RS', {
+            .text('São Leopoldo - RS', {
                 align: 'right'
             })
 
